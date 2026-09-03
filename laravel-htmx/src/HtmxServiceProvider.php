@@ -6,6 +6,7 @@ namespace Htmx\Htmx;
 
 use Htmx\Htmx\Console\Commands\HtmxCommand;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\ServiceProvider;
 
 class HtmxServiceProvider extends ServiceProvider
@@ -27,6 +28,7 @@ class HtmxServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->registerRequestMacros();
+        $this->registerResponseMacros();
 
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'laravel-htmx');
 
@@ -82,6 +84,90 @@ class HtmxServiceProvider extends ServiceProvider
 
         Request::macro('requestType', function (): ?string {
             return app(HtmxManager::class)->requestType($this);
+        });
+    }
+
+    /**
+     * Response macros apply one builder header and stay chainable.
+     */
+    private function registerResponseMacros(): void
+    {
+        Response::macro('trigger', function (string|array $events, ?string $target = null): Response {
+            (new HtmxHeaders)->trigger($events, $target)->applyTo($this);
+
+            return $this;
+        });
+
+        Response::macro('retarget', function (string $selector): Response {
+            (new HtmxHeaders)->retarget($selector)->applyTo($this);
+
+            return $this;
+        });
+
+        Response::macro('target', function (string $selector): Response {
+            (new HtmxHeaders)->target($selector)->applyTo($this);
+
+            return $this;
+        });
+
+        Response::macro('reswap', function (string $option): Response {
+            (new HtmxHeaders)->reswap($option)->applyTo($this);
+
+            return $this;
+        });
+
+        Response::macro('swap', function (string $option): Response {
+            (new HtmxHeaders)->swap($option)->applyTo($this);
+
+            return $this;
+        });
+
+        Response::macro('reselect', function (string $selector): Response {
+            (new HtmxHeaders)->reselect($selector)->applyTo($this);
+
+            return $this;
+        });
+
+        Response::macro('pushUrl', function (string|bool $url): Response {
+            (new HtmxHeaders)->pushUrl($url)->applyTo($this);
+
+            return $this;
+        });
+
+        Response::macro('push', function (string|bool $url): Response {
+            (new HtmxHeaders)->push($url)->applyTo($this);
+
+            return $this;
+        });
+
+        Response::macro('replaceUrl', function (string|bool $url): Response {
+            (new HtmxHeaders)->replaceUrl($url)->applyTo($this);
+
+            return $this;
+        });
+
+        Response::macro('replace', function (string|bool $url): Response {
+            (new HtmxHeaders)->replace($url)->applyTo($this);
+
+            return $this;
+        });
+
+        Response::macro('redirect', function (string $url): Response {
+            (new HtmxHeaders)->redirect($url)->applyTo($this);
+
+            return $this;
+        });
+
+        Response::macro('location', function (string|array $value): Response {
+            (new HtmxHeaders)->location($value)->applyTo($this);
+
+            return $this;
+        });
+
+        Response::macro('refresh', function (): Response {
+            (new HtmxHeaders)->refresh()->applyTo($this);
+
+            return $this;
         });
     }
 }

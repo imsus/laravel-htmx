@@ -21,6 +21,14 @@ class Htmx
         return $this->manager;
     }
 
+    /**
+     * Fresh response-header builder (never shared between requests).
+     */
+    public function headers(): HtmxHeaders
+    {
+        return new HtmxHeaders;
+    }
+
     public function isHtmx(?Request $request = null): bool
     {
         return $this->manager->isHtmx($request);
