@@ -9,6 +9,8 @@
 <body>
 <h1>Grocery list</h1>
 
+<p><a href="/patterns">See the server pattern gallery</a></p>
+
 <p>
     The list below refreshes as a <code>partial</code>. Reload the page or
     restore it from history and the server returns the <code>full page</code>

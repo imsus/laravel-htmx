@@ -10,7 +10,71 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Fragment + 422 + history-restore demo (see resources/views/demo.blade.php).
+// Pattern gallery: server communication through the package API
+// (see resources/views/patterns.blade.php).
+$patternsView = fn (array $data): View => view()->file(__DIR__.'/../resources/views/patterns.blade.php', $data);
+
+$patternItems = fn (): array => session('items', ['Apples', 'Oranges']);
+
+Route::get('/patterns', function (Request $request) use ($patternsView, $patternItems) {
+    return $patternsView([
+        'items' => $patternItems(),
+        'errors' => new ViewErrorBag,
+        'q' => (string) $request->query('q', ''),
+    ]);
+});
+
+Route::get('/patterns/search', function (Request $request) use ($patternsView, $patternItems) {
+    $q = (string) $request->query('q', '');
+
+    $items = array_values(array_filter(
+        $patternItems(),
+        fn (string $item): bool => str_contains(strtolower($item), strtolower($q)),
+    ));
+
+    $response = response($patternsView([
+        'items' => $items,
+        'errors' => new ViewErrorBag,
+        'q' => $q,
+    ])->fragmentIf($request->isPartial(), 'results'));
+
+    if ($request->isPartial() && $q !== '') {
+        htmx()->headers()->pushUrl('/patterns?q='.urlencode($q))->applyTo($response);
+    }
+
+    return $response;
+});
+
+Route::delete('/patterns/items/{name}', function (Request $request, string $name) use ($patternItems) {
+    session(['items' => array_values(array_filter(
+        $patternItems(),
+        fn (string $item): bool => $item !== $name,
+    ))]);
+
+    return htmx()
+        ->headers()
+        ->trigger(['itemDeleted' => ['message' => "{$name} deleted"]])
+        ->applyTo(response('', 200));
+});
+
+Route::post('/patterns/validate', function (Request $request) use ($patternsView, $patternItems) {
+    $validator = Validator::make($request->all(), ['name' => 'required|min:3']);
+
+    $headers = htmx()->headers()->retarget('#v-errors')->reswap('innerHTML');
+
+    if ($validator->fails()) {
+        return $headers->applyTo(response(
+            $patternsView(['items' => $patternItems(), 'errors' => $validator->errors(), 'q' => ''])
+                ->fragmentIf(true, 'v-errors'),
+            422,
+        ));
+    }
+
+    return $headers->applyTo(response(
+        $patternsView(['items' => $patternItems(), 'errors' => new ViewErrorBag, 'q' => ''])
+            ->fragmentIf(true, 'v-errors'),
+    ));
+});
 // The workbench app boots from the default skeleton, so the demo view loads
 // by file path instead of by name.
 $demoView = fn (array $data): View => view()->file(__DIR__.'/../resources/views/demo.blade.php', $data);
