@@ -20,7 +20,13 @@ You can install the package via Composer:
 composer require imsus/laravel-htmx
 ```
 
-You may publish all of the package's resources at once:
+Publish config, views, and pinned htmx 4.0.0 assets in one step:
+
+```bash
+php artisan htmx:install
+```
+
+Or publish all of the package's resources at once:
 
 ```bash
 php artisan vendor:publish --tag="laravel-htmx"
@@ -130,6 +136,64 @@ response instead of changing the default:
 
 See `workbench/routes/web.php` (`/demo`) for a runnable fragment, `422`, and
 history-restore demo.
+
+### Client scripts and config
+
+Include the client once per layout — versioned scripts with SRI hashes, the
+strict v4 config meta tag, and the extension allowlist:
+
+```blade
+<head>
+    <x-htmx::scripts />
+</head>
+```
+
+Strict v4 defaults ship in `config/laravel-htmx.php`: explicit inheritance
+off, minimal swap exclusions (`204`, `304`), a 60s fetch timeout, and server
+re-fetch history. 2.x-compatible values exist only as commented opt-ins.
+Set `assets.cdnFallback` to `true` to degrade to the pinned
+`htmx.org@4.0.0` CDN build; `assets.extensions` is the explicit allowlist
+(htmx 4 loads extensions via direct `<script>` tags, so the package owns the
+list). The ESM build is vendored for bundler consumers but not auto-included.
+
+### Boosted layouts and row deletes
+
+Boosted navigation (`hx-boost`) defaults to a `full page` — never a layout-less
+`partial` — because `isPartial()` is false for boosted requests. Client events
+are `htmx:*` names; XHR-era events (`htmx:xhr:*`, `htmx:abort`) never fire
+since v4 uses `fetch()`. Quote `from:`/`target:` selectors containing spaces
+or commas with single quotes. Deletes scoped to a row's form:
+
+```html
+<button hx-delete="/items/1" hx-include="closest form">Delete</button>
+```
+
+Forms submit as usual — file uploads just need explicit multipart encoding,
+and the `422` error-`partial` pattern applies unchanged:
+
+```html
+<form hx-post="/avatar" hx-encoding="multipart/form-data" hx-target="#form-errors" hx-swap="innerHTML">
+    <input type="file" name="avatar">
+    <button type="submit">Upload</button>
+</form>
+```
+
+The server reads `$request->file('avatar')` normally; validation failures
+return the `422` error `partial` into `#form-errors` like any other form.
+
+### Upgrading from 2.x
+
+Scan Blade markup — including templates — before runtime:
+
+```bash
+php artisan htmx:upgrade-check --path=resources/views --ext=.blade.php
+```
+
+Flags removed attributes (`hx-ext`, `hx-request`, `hx-vars`, `hx-params`),
+removed headers (`HX-Trigger-After-Swap`, `HX-Trigger-After-Settle`), XHR-era
+events, direct extension `<script>` includes, `hx-inherit` (use the
+`:inherited` modifier), and unquoted `from:(`/`target:(` selectors. Exits
+non-zero while findings remain.
 
 ## Changelog
 

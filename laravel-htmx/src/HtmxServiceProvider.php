@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Htmx\Htmx;
 
-use Htmx\Htmx\Console\Commands\HtmxCommand;
+use Htmx\Htmx\Console\Commands\InstallCommand;
+use Htmx\Htmx\Console\Commands\UpgradeCheckCommand;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\ServiceProvider;
@@ -31,6 +32,7 @@ class HtmxServiceProvider extends ServiceProvider
         $this->registerResponseMacros();
 
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'laravel-htmx');
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'htmx');
 
         if (! $this->app->runningInConsole()) {
             return;
@@ -49,7 +51,8 @@ class HtmxServiceProvider extends ServiceProvider
         ], ['laravel-htmx', 'laravel-htmx-assets']);
 
         $this->commands([
-            HtmxCommand::class,
+            InstallCommand::class,
+            UpgradeCheckCommand::class,
         ]);
     }
 

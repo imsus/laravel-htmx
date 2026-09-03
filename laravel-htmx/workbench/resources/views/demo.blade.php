@@ -4,8 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>laravel-htmx demo</title>
-    <!-- Pinned htmx 4 (ticket 04 vendors this with SRI + config meta tag). -->
-    <script src="https://unpkg.com/htmx.org@4.0.0/dist/htmx.min.js" defer></script>
+    <x-htmx::scripts />
 </head>
 <body>
 <h1>Grocery list</h1>
