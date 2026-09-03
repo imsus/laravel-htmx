@@ -92,7 +92,7 @@ so the swap never destroys the list it validates:
 
 ```php
 if ($validator->fails()) {
-    return htmx()->headers()->retarget('#form-errors')->applyTo(response(
+    return htmx()->headers()->retarget('#form-errors')->reswap('innerHTML')->applyTo(response(
         view('items', ['items' => [], 'errors' => $validator->errors()])
             ->fragmentIf(true, 'form-errors'),
         422,

@@ -23,6 +23,7 @@ function fragmentProbeRoutes(): void
             return htmx()
                 ->headers()
                 ->retarget('#form-errors')
+                ->reswap('innerHTML')
                 ->applyTo(response(
                     view('demo-page', ['items' => [], 'errors' => $validator->errors()])
                         ->fragmentIf(true, 'form-errors'),
@@ -70,8 +71,22 @@ it('returns the error partial with 422 that swaps into the target', function () 
     test()->post('/_htmx-items', ['name' => 'x'], ['HX-Request' => 'true', 'HX-Request-Type' => 'partial'])
         ->assertStatus(422)
         ->assertHeader('HX-Retarget', '#form-errors')
+        ->assertHeader('HX-Reswap', 'innerHTML')
         ->assertSee('<p>The name field must be at least 3 characters.</p>', false)
         ->assertDontSee('<h1>Items</h1>', false);
+});
+
+it('keeps the error slot across repeated failures', function () {
+    fragmentProbeRoutes();
+
+    // innerHTML (not the trigger's outerHTML) leaves #form-errors in place,
+    // so a second invalid submit still has a target to swap into.
+    foreach (['x', 'y'] as $name) {
+        test()->post('/_htmx-items', ['name' => $name], ['HX-Request' => 'true', 'HX-Request-Type' => 'partial'])
+            ->assertStatus(422)
+            ->assertHeader('HX-Retarget', '#form-errors')
+            ->assertHeader('HX-Reswap', 'innerHTML');
+    }
 });
 
 it('returns the rows partial on valid input', function () {

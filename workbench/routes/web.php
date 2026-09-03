@@ -29,6 +29,7 @@ Route::post('/demo/items', function (Request $request) use ($demoView) {
         return htmx()
             ->headers()
             ->retarget('#form-errors')
+            ->reswap('innerHTML')
             ->applyTo(response(
                 $demoView(['items' => [], 'errors' => $validator->errors()])
                     ->fragmentIf(true, 'form-errors'),

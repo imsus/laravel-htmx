@@ -108,6 +108,7 @@ Route::post('/items', function (Request $request) {
         return htmx()
             ->headers()
             ->retarget('#form-errors')
+            ->reswap('innerHTML') // fill the slot; without this the form's outerHTML swap would replace (and destroy) it
             ->applyTo(response(
                 view('items', ['items' => [], 'errors' => $validator->errors()])
                     ->fragmentIf(true, 'form-errors'),
