@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Laravel Htmx 4 — Build Plan</title>
+<style>
+:root{
+  --ink:#1b2434; --slate:#5b6b82; --paper:#ffffff; --wash:#f2f5f9;
+  --line:#dde4ee; --accent:#2b5fce; --accent-ink:#1e46a0;
+  --moss:#1e7f4f; --amber:#9a6200; --code:#eef2f9;
+  --radius:10px; --measure:72ch;
+  color-scheme:light dark;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --ink:#e8edf5; --slate:#a3b1c6; --paper:#121826; --wash:#1a2233;
+    --line:#2b3a52; --accent:#7ea2ff; --accent-ink:#b9ccff;
+    --moss:#5fd598; --amber:#e8b64c; --code:#1c2536; }
+}
+:root[data-theme="light"]{ --ink:#1b2434; --slate:#5b6b82; --paper:#ffffff; --wash:#f2f5f9;
+  --line:#dde4ee; --accent:#2b5fce; --accent-ink:#1e46a0;
+  --moss:#1e7f4f; --amber:#9a6200; --code:#eef2f9; }
+:root[data-theme="dark"]{ --ink:#e8edf5; --slate:#a3b1c6; --paper:#121826; --wash:#1a2233;
+  --line:#2b3a52; --accent:#7ea2ff; --accent-ink:#b9ccff;
+  --moss:#5fd598; --amber:#e8b64c; --code:#1c2536; }
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+.mono,code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+header.top{border-bottom:1px solid var(--line);background:var(--wash)}
+.wrap{max-width:calc(var(--measure) + 8rem);margin:0 auto;padding:1.5rem clamp(1rem,4vw,2.5rem)}
+.eyebrow{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--slate);margin:0 0 .4rem}
+h1{font-size:clamp(1.6rem,3.4vw,2.3rem);line-height:1.15;letter-spacing:-.01em;
+  text-wrap:balance;margin:.2rem 0 .5rem;
+  font-family:"Avenir Next","Segoe UI",system-ui,sans-serif}
+.sub{color:var(--slate);max-width:var(--measure);margin:0}
+.grid{display:grid;gap:1rem}
+@media(min-width:60rem){.grid.two{grid-template-columns:1fr 1fr}}
+nav.phases{position:sticky;top:0;background:var(--paper);border-bottom:1px solid var(--line);z-index:5}
+nav.phases .wrap{display:flex;gap:.4rem;flex-wrap:wrap;padding-top:.7rem;padding-bottom:.7rem}
+nav.phases a{color:var(--accent-ink);text-decoration:none;border:1px solid var(--line);
+  border-radius:999px;padding:.25rem .8rem;font-size:.85rem}
+nav.phases a:focus-visible,a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h2{font-size:1.25rem;margin:2.2rem 0 .6rem;letter-spacing:-.005em}
+h3{font-size:1.02rem;margin:1.4rem 0 .4rem}
+p,li{max-width:var(--measure)}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius);background:var(--paper)}
+table{border-collapse:collapse;width:100%;font-size:.9rem;min-width:34rem;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:.55rem .7rem;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--wash);font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--slate)}
+tr:last-child td{border-bottom:0}
+code{background:var(--code);border-radius:6px;padding:.1em .4em;font-size:.85em}
+pre{background:var(--code);border:1px solid var(--line);border-radius:var(--radius);padding:1rem;overflow-x:auto;font-size:.85rem}
+.phase{border:1px solid var(--line);border-radius:var(--radius);padding:1.1rem 1.2rem;background:var(--paper)}
+.phase header{display:flex;justify-content:space-between;gap:.8rem;flex-wrap:wrap;align-items:baseline}
+.pill{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--moss);
+  border:1px solid var(--line);border-radius:999px;padding:.15rem .7rem;white-space:nowrap}
+.pill.later{color:var(--amber)}
+ul.tight li{margin:.25rem 0}
+details{border:1px solid var(--line);border-radius:var(--radius);padding:.7rem 1rem;background:var(--paper);margin:.6rem 0}
+summary{cursor:pointer;font-weight:600}
+footer{border-top:1px solid var(--line);color:var(--slate);font-size:.85rem}
+.theme{float:right;font-size:.8rem;background:none;border:1px solid var(--line);border-radius:999px;
+  padding:.25rem .8rem;color:var(--slate);cursor:pointer}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<header class="top">
+<div class="wrap">
+<button class="theme" id="theme" type="button">Toggle theme</button>
+<p class="eyebrow">imsus / laravel-htmx &middot; htmx 4.0.0</p>
+<h1>Laravel Htmx 4 — Build Plan</h1>
+<p class="sub">Full server adapter, strict v4 defaults, manual <code>fragmentIf</code> rendering. Grilled Q1–Q12 settled; glossary in <code>CONTEXT.md</code>; decisions in <code>docs/adr/0001–0002</code>.</p>
+</div>
+</header>
+<nav class="phases" aria-label="Phases">
+<div class="wrap">
+<a href="#decisions">Decisions</a><a href="#glossary">Glossary</a><a href="#p1">Phase 1 · Core</a><a href="#p2">Phase 2 · Assets</a><a href="#p3">Phase 3 · DX</a><a href="#api">API map</a><a href="#risks">Risks</a><a href="#verify">Verify</a>
+</div>
+</nav>
+<main class="wrap">
+<section id="decisions" aria-labelledby="decisions-h">
+<h2 id="decisions-h">Accepted decisions</h2>
+<div class="tablewrap"><table>
+<thead><tr><th scope="col">ID</th><th scope="col">Decision</th><th scope="col">Why</th></tr></thead>
+<tbody>
+<tr><td>Q1/Q5</td><td>Full server adapter, core first</td><td>v4 breakage is all server-visible; helpers alone leave apps re-solving partials, errors, assets.</td></tr>
+<tr><td>Q2/Q9/Q12</td><td>Macros + <code>htmx()</code> primary, thin <code>Htmx</code> facade; aliases <code>target/swap/push/replace</code> only</td><td>Macros suit middleware; facade suits controllers; four aliases cover daily typing, rest stay single-named.</td></tr>
+<tr><td>Q3/Q10</td><td>Pinned vendored assets + SRI, <code>cdnFallback</code> toggle</td><td>v4 loads extensions by <code>&lt;script&gt;</code>; package must own the list. See ADR-0002.</td></tr>
+<tr><td>Q4</td><td>Strict v4 defaults; 2.x values commented opt-in</td><td>Compat shims hide breakage. See ADR-0001.</td></tr>
+<tr><td>Q6/Q11</td><td>Single-view <code>fragmentIf(htmx()-&gt;isPartial(), 'rows')</code> house pattern</td><td>One file holds page + rows; <code>@fragment('rows')</code> is the mechanism, <code>partial</code> the wire concept.</td></tr>
+<tr><td>Q7</td><td><code>422</code> + error fragment default; <code>hx-status</code> for exceptions</td><td>v4 swaps error responses; error HTML <em>is</em> swap content.</td></tr>
+<tr><td>Q8</td><td><code>isPartial()</code> false on history-restore; boosted defaults to full page</td><td>History re-fetch and boosted nav need full documents.</td></tr>
+</tbody>
+</table></div>
+</section>
+<section id="glossary" aria-labelledby="glossary-h">
+<h2 id="glossary-h">Glossary (from CONTEXT.md)</h2>
+<div class="grid two">
+<div><h3>Htmx request</h3><p>Any request carrying <code>HX-Request</code>. Boosted is a subtype, not a synonym.</p></div>
+<div><h3>Partial / Fragment / Full page</h3><p><code>Partial</code> = fragment-only wire response. <code>Fragment</code> = Blade <code>@fragment</code> mechanism via <code>fragment()</code>/<code>fragmentIf()</code>. <code>Full page</code> = complete document for non-htmx or history-restore.</p></div>
+<div><h3>Trigger</h3><p>Client event fired after swap via the single v4 <code>HX-Trigger</code> header (JSON detail + <code>target</code> key).</p></div>
+<div><h3>Non-goals</h3><p>No package routes, no migrations, no package translations. App owns endpoints and strings.</p></div>
+</div>
+</section>
+<section id="p1" aria-labelledby="p1-h">
+<h2 id="p1-h">Phase 1 · Request / response core</h2>
+<div class="phase"><header><strong>Build the wire contract first — everything else demos it.</strong><span class="pill">First</span></header>
+<h3>Files</h3>
+<ul class="tight">
+<li><code>laravel-htmx/src/HtmxManager.php</code> (new) — detection: <code>isHtmx/isPartial/isBoosted/isHistoryRestore/source/target/requestType</code>.</li>
+<li><code>laravel-htmx/src/Htmx.php</code> (replace stub) — response builder: 9 header methods + 4 aliases.</li>
+<li><code>laravel-htmx/src/HtmxServiceProvider.php</code> — bind manager singleton, register <code>Request</code>/<code>Response</code> macros, <code>htmx()</code> helper.</li>
+<li><code>laravel-htmx/workbench/routes/web.php</code> + one Blade page with <code>@fragment('rows')</code> demo.</li>
+<li><code>laravel-htmx/tests/Feature/*</code> — Pest coverage of headers, partial/full branching, history-restore.</li>
+</ul>
+<h3>Acceptance</h3>
+<ul class="tight">
+<li><code>HX-Source</code>/<code>HX-Target</code> parsed as <code>tag#id</code>; <code>HX-Request-Type: partial</code> drives <code>isPartial()</code>.</li>
+<li>History-restore request returns full page even with <code>HX-Request</code> present.</li>
+<li><code>422</code> error fragment swaps into target in workbench demo.</li>
+<li><code>view('page')-&gt;fragmentIf(htmx()-&gt;isPartial(), 'rows')</code> proven by a failing-then-passing Pest test.</li>
+</ul>
+<details><summary>Request semantics to encode</summary>
+<pre>isHtmx()          = HX-Request present
+isPartial()       = isHtmx AND HX-Request-Type == partial AND NOT history-restore
+isBoosted()       = HX-Boosted present → defaults to full page
+isHistoryRestore()= HX-History-Restore-Request present → full page
+source()/target() = HX-Source / HX-Target (tag#id format)</pre>
+</details>
+</div>
+</section>
+<section id="p2" aria-labelledby="p2-h">
+<h2 id="p2-h">Phase 2 · Config + assets + scripts directive</h2>
+<div class="phase"><header><strong>Make the client config reproducible.</strong><span class="pill later">After core</span></header>
+<ul class="tight">
+<li><code>laravel-htmx/config/laravel-htmx.php</code> — strict defaults (<code>implicitInheritance=false</code>, <code>noSwap=[204,304]</code>, <code>defaultTimeout=60000</code>, <code>history</code> re-fetch), SRI map, <code>cdnFallback</code>, commented 2.x opt-ins.</li>
+<li><code>laravel-htmx/public/vendor/htmx/*</code> — vendored <code>htmx.min.js</code>, <code>esm</code> builds, <code>htmax.js</code>, <code>hx-history-cache</code>, <code>hx-prompt</code> at <code>4.0.0</code>.</li>
+<li><code>laravel-htmx/resources/views/components/scripts.blade.php</code> — <code>&lt;x-htmx::scripts /&gt;</code> emitting versioned <code>&lt;script&gt;</code> + <code>&lt;meta name="htmx-config"&gt;</code> + extension allowlist.</li>
+<li><code>htmx:install</code> — publish config/views/assets.</li>
+</ul>
+</div>
+</section>
+<section id="p3" aria-labelledby="p3-h">
+<h2 id="p3-h">Phase 3 · Commands, views, skill, docs</h2>
+<div class="phase"><header><strong>Migration path and agent leverage.</strong><span class="pill later">Last</span></header>
+<ul class="tight">
+<li><code>htmx:upgrade-check --path --ext=.blade.php</code> wrapping <code>npx htmx.org@4 upgrade-check</code> (renames, <code>:inherited</code>, <code>htmx:*</code> events, extension includes).</li>
+<li>Error partial + <code>hx-status</code> example views; <code>hx-boost</code> layout note; <code>hx-delete hx-include="closest form"</code> note.</li>
+<li><code>resources/boost/skills/laravel-htmx-development/SKILL.md</code> — generated from implementation: partial-vs-full, header helpers, <code>422</code> pattern, explicit inheritance, <code>htmx:*</code> names, script includes, upgrade-check.</li>
+<li><code>README.md</code> + CHANGELOG for release.</li>
+</ul>
+</div>
+</section>
+<section id="api" aria-labelledby="api-h">
+<h2 id="api-h">API map</h2>
+<h3>Response headers (all nine, v4)</h3>
+<div class="tablewrap"><table>
+<thead><tr><th scope="col">Method</th><th scope="col">Header</th><th scope="col">Alias</th></tr></thead>
+<tbody>
+<tr><td><code>trigger($events)</code></td><td><code>HX-Trigger</code> (single, JSON detail, <code>target</code> key)</td><td>—</td></tr>
+<tr><td><code>retarget($sel)</code></td><td><code>HX-Retarget</code></td><td><code>target()</code></td></tr>
+<tr><td><code>reswap($opt)</code></td><td><code>HX-Reswap</code></td><td><code>swap()</code></td></tr>
+<tr><td><code>reselect($sel)</code></td><td><code>HX-Reselect</code></td><td>—</td></tr>
+<tr><td><code>pushUrl($url)</code></td><td><code>HX-Push-Url</code></td><td><code>push()</code></td></tr>
+<tr><td><code>replaceUrl($url)</code></td><td><code>HX-Replace-Url</code></td><td><code>replace()</code></td></tr>
+<tr><td><code>redirect($url)</code></td><td><code>HX-Redirect</code></td><td>—</td></tr>
+<tr><td><code>location($v)</code></td><td><code>HX-Location</code></td><td>—</td></tr>
+<tr><td><code>refresh()</code></td><td><code>HX-Refresh: true</code></td><td>—</td></tr>
+</tbody>
+</table></div>
+<h3>Removed in v4 — do not implement</h3>
+<p><code>HX-Trigger-After-Swap</code>, <code>HX-Trigger-After-Settle</code>, <code>hx-ext</code>, <code>hx-request</code>, <code>hx-vars</code>, <code>hx-params</code>, XHR events. <code>HX-Trigger-Name</code> folded into <code>HX-Source</code>.</p>
+</section>
+<section id="risks" aria-labelledby="risks-h">
+<h2 id="risks-h">Dependencies &amp; risks</h2>
+<ul>
+<li>OOB swaps after main content in v4 — keep swaps independent; document.</li>
+<li><code>fetch()</code> replaces XHR — no progress/abort XHR events; timeout now defaults 60s.</li>
+<li><code>from:</code>/<code>target:</code> selectors with spaces/commas need single quotes — upgrade-check must flag old paren syntax.</li>
+<li>Compat matrix (PHP ^8.3, Illuminate ^12||^13, Testbench ^10||^11) checked by <code>composer test</code> (analyse + lint + type-coverage + Pest).</li>
+</ul>
+</section>
+<section id="verify" aria-labelledby="verify-h">
+<h2 id="verify-h">Verification</h2>
+<pre>composer test          # analyse + lint:check + type-coverage 100 + pest
+vendor/bin/pest        # single run while iterating
+composer build/serve   # workbench fragment + 422 + history demo</pre>
+<p>ADRs written: <code>docs/adr/0001-strict-htmx4-defaults.md</code>, <code>docs/adr/0002-vendored-assets-with-sri.md</code>. Glossary: <code>CONTEXT.md</code>.</p>
+</section>
+</main>
+<footer><div class="wrap">Plan preserves Q1–Q12 order and wording. Next action: start Phase 1 with a failing Pest test for <code>isPartial()</code> + <code>fragmentIf</code>.</div></footer>
+<script>
+(function(){var b=document.getElementById('theme');
+function cur(){return document.documentElement.getAttribute('data-theme')||'light';}
+b.addEventListener('click',function(){document.documentElement.setAttribute('data-theme',cur()==='light'?'dark':'light');});})();
+</script>
+</body>
+</html>

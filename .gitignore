@@ -1,0 +1,15 @@
+# Dependencies
+laravel-htmx/vendor/
+laravel-htmx/node_modules/
+
+# Build / analysis output
+laravel-htmx/build/
+
+# Laravel / Testbench workbench skeleton
+laravel-htmx/workbench/
+
+# Env & OS
+.env
+.env.*
+.DS_Store
+Thumbs.db
