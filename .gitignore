@@ -5,8 +5,9 @@ laravel-htmx/node_modules/
 # Build / analysis output
 laravel-htmx/build/
 
-# Laravel / Testbench workbench skeleton
-laravel-htmx/workbench/
+# Laravel / Testbench workbench runtime artifacts (routes, views stay committed)
+laravel-htmx/workbench/storage/
+laravel-htmx/workbench/.env
 
 # Env & OS
 .env
