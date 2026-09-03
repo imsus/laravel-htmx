@@ -1,16 +1,22 @@
 # Dependencies
-laravel-htmx/vendor/
-laravel-htmx/node_modules/
+/vendor
+/node_modules
 
 # Build / analysis output
-laravel-htmx/build/
+/build
+/coverage
+/.phpunit.cache
+/.phpunit.result.cache
+composer.lock
 
 # Laravel / Testbench workbench runtime artifacts (routes, views stay committed)
-laravel-htmx/workbench/storage/
-laravel-htmx/workbench/.env
+workbench/storage/
+workbench/.env
 
 # Env & OS
 .env
 .env.*
 .DS_Store
 Thumbs.db
+.idea
+.vscode

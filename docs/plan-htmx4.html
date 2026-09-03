@@ -110,11 +110,11 @@ footer{border-top:1px solid var(--line);color:var(--slate);font-size:.85rem}
 <div class="phase"><header><strong>Build the wire contract first — everything else demos it.</strong><span class="pill">First</span></header>
 <h3>Files</h3>
 <ul class="tight">
-<li><code>laravel-htmx/src/HtmxManager.php</code> (new) — detection: <code>isHtmx/isPartial/isBoosted/isHistoryRestore/source/target/requestType</code>.</li>
-<li><code>laravel-htmx/src/Htmx.php</code> (replace stub) — response builder: 9 header methods + 4 aliases.</li>
-<li><code>laravel-htmx/src/HtmxServiceProvider.php</code> — bind manager singleton, register <code>Request</code>/<code>Response</code> macros, <code>htmx()</code> helper.</li>
-<li><code>laravel-htmx/workbench/routes/web.php</code> + one Blade page with <code>@fragment('rows')</code> demo.</li>
-<li><code>laravel-htmx/tests/Feature/*</code> — Pest coverage of headers, partial/full branching, history-restore.</li>
+<li><code>src/HtmxManager.php</code> (new) — detection: <code>isHtmx/isPartial/isBoosted/isHistoryRestore/source/target/requestType</code>.</li>
+<li><code>src/Htmx.php</code> (replace stub) — response builder: 9 header methods + 4 aliases.</li>
+<li><code>src/HtmxServiceProvider.php</code> — bind manager singleton, register <code>Request</code>/<code>Response</code> macros, <code>htmx()</code> helper.</li>
+<li><code>workbench/routes/web.php</code> + one Blade page with <code>@fragment('rows')</code> demo.</li>
+<li><code>tests/Feature/*</code> — Pest coverage of headers, partial/full branching, history-restore.</li>
 </ul>
 <h3>Acceptance</h3>
 <ul class="tight">
@@ -136,9 +136,9 @@ source()/target() = HX-Source / HX-Target (tag#id format)</pre>
 <h2 id="p2-h">Phase 2 · Config + assets + scripts directive</h2>
 <div class="phase"><header><strong>Make the client config reproducible.</strong><span class="pill later">After core</span></header>
 <ul class="tight">
-<li><code>laravel-htmx/config/laravel-htmx.php</code> — strict defaults (<code>implicitInheritance=false</code>, <code>noSwap=[204,304]</code>, <code>defaultTimeout=60000</code>, <code>history</code> re-fetch), SRI map, <code>cdnFallback</code>, commented 2.x opt-ins.</li>
-<li><code>laravel-htmx/public/vendor/htmx/*</code> — vendored <code>htmx.min.js</code>, <code>esm</code> builds, <code>htmax.js</code>, <code>hx-history-cache</code>, <code>hx-prompt</code> at <code>4.0.0</code>.</li>
-<li><code>laravel-htmx/resources/views/components/scripts.blade.php</code> — <code>&lt;x-htmx::scripts /&gt;</code> emitting versioned <code>&lt;script&gt;</code> + <code>&lt;meta name="htmx-config"&gt;</code> + extension allowlist.</li>
+<li><code>config/laravel-htmx.php</code> — strict defaults (<code>implicitInheritance=false</code>, <code>noSwap=[204,304]</code>, <code>defaultTimeout=60000</code>, <code>history</code> re-fetch), SRI map, <code>cdnFallback</code>, commented 2.x opt-ins.</li>
+<li><code>public/vendor/htmx/*</code> — vendored <code>htmx.min.js</code>, <code>esm</code> builds, <code>htmax.js</code>, <code>hx-history-cache</code>, <code>hx-prompt</code> at <code>4.0.0</code>.</li>
+<li><code>resources/views/components/scripts.blade.php</code> — <code>&lt;x-htmx::scripts /&gt;</code> emitting versioned <code>&lt;script&gt;</code> + <code>&lt;meta name="htmx-config"&gt;</code> + extension allowlist.</li>
 <li><code>htmx:install</code> — publish config/views/assets.</li>
 </ul>
 </div>
