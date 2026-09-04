@@ -29,10 +29,10 @@ use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 class HtmxHeaders
 {
     /**
-     * Every header method, in registration order.
+     * Every header method, also available as a Response macro.
      *
-     * The provider derives the Response macros from this list, so adding
-     * a header means adding one method plus one entry here.
+     * `response($html)->retarget('#rows')` works because `retarget`
+     * is on this list — one list backs the builder and the macros.
      *
      * @var list<string>
      */

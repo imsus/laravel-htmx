@@ -35,11 +35,11 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 class Htmx
 {
     /**
-     * Every detection affordance, in registration order.
+     * Every detection method, also available as a Request macro.
      *
-     * The provider derives the Request macros from this list, so adding
-     * a predicate means adding one method plus one entry here — the
-     * macro, helper, and facade follow for free.
+     * One list backs all three spellings — `$request->isPartial()`,
+     * `htmx()->isPartial()`, `Htmx::isPartial()` — so each name below
+     * works everywhere.
      *
      * @var list<string>
      */
@@ -57,7 +57,7 @@ class Htmx
     ];
 
     /**
-     * Every HX-* wire name the module reads, in one place.
+     * The HX-* header behind each detection method, in one place.
      *
      * @var array<string, string>
      */
@@ -102,7 +102,7 @@ class Htmx
      *         );
      *     }
      *
-     * Reach past it only for the exceptional targets: a 200 with
+     * Reach past it only for the exceptions: a 200 with
      * HX-Redirect when the failure leaves the page, another 4xx when
      * client code distinguishes failure kinds.
      */
@@ -118,9 +118,9 @@ class Htmx
      * Answer a poll with either fresh markup or a quiet 304.
      *
      * The whole hx-ptag loop in one call: when the element's stored tag
-     * already matches, the empty 304 skips the swap entirely — and the
-     * current markup is never rendered. Otherwise the named Fragment
-     * renders stamped with its new tag:
+     * already matches, the empty 304 skips the swap — the fragment never
+     * renders. Otherwise the named Fragment renders stamped with its
+     * new tag:
      *
      *     return htmx()->poll(
      *         view('feed', ['items' => $items]),
@@ -154,8 +154,8 @@ class Htmx
      *     ]);
      *
      * Unnamed `data:` blocks swap per the request's hx-target/hx-swap;
-     * named `event:` blocks dispatch DOM events instead. The client
-     * replays from `Last-Event-ID` when an `id:` was seen.
+     * named `event:` blocks dispatch DOM events instead. Send an `id:`
+     * and the client resumes from `Last-Event-ID` after a disconnect.
      *
      * @param  iterable<string|array{data?: string|string[], event?: string, id?: string, retry?: int}>  $events
      */

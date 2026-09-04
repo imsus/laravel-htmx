@@ -16,16 +16,16 @@ use Illuminate\Support\ServiceProvider;
  *
  * Once registered — which happens automatically via package discovery —
  * you get an expressive Request and Response vocabulary, a config file,
- * Blade views, vendored client assets, and two Artisan commands.
- * Nothing to bootstrap by hand.
+ * Blade views, vendored client assets, and Artisan commands that install,
+ * check upgrades, and hash assets. Nothing to bootstrap by hand.
  */
 class HtmxServiceProvider extends ServiceProvider
 {
     /**
-     * Publish groups, shared with the install command.
+     * The publish tags for config, views, and assets.
      *
-     * Renaming a tag here renames it for both publishes() calls below
-     * and htmx:install — neither side re-spells the strings.
+     * Publish one group with `vendor:publish --tag="laravel-htmx-config"`,
+     * or run `htmx:install` for all three at once.
      *
      * @var array<string, string>
      */
@@ -38,9 +38,9 @@ class HtmxServiceProvider extends ServiceProvider
     /**
      * Register the htmx entry point in the container.
      *
-     * A single stateless singleton sits behind the helper, the facade,
-     * and every macro, so there is exactly one definition of "is this
-     * a partial?" to learn and trust.
+     * One shared instance answers every spelling — the helper, the
+     * facade, and every macro all ask the same object, so "is this
+     * a partial?" means the same thing everywhere.
      */
     public function register(): void
     {
@@ -86,9 +86,8 @@ class HtmxServiceProvider extends ServiceProvider
     /**
      * Give every request a fluent htmx vocabulary.
      *
-     * Registrations derive from Htmx::REQUEST_MACROS — one shared,
-     * stateless singleton behind them — so the detection logic lives in
-     * exactly one place:
+     * Each name on the shared list becomes a Request macro, so the
+     * detection logic lives in exactly one place:
      *
      *     $request->isPartial();
      *     $request->target();
@@ -107,9 +106,9 @@ class HtmxServiceProvider extends ServiceProvider
     /**
      * Give every response a one-line way to speak htmx.
      *
-     * Registrations derive from HtmxHeaders::RESPONSE_MACROS — each macro
-     * forwards its arguments to a fresh builder and applies it, staying
-     * chainable with the rest of your response building:
+     * Each name on the shared list becomes a Response macro that builds
+     * the header and applies it, staying chainable with the rest of
+     * your response building:
      *
      *     return response($html)->retarget('#rows')->reswap('beforeend');
      */

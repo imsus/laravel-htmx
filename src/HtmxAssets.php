@@ -7,13 +7,11 @@ namespace Htmx\Htmx;
 use Illuminate\Contracts\Config\Repository;
 
 /**
- * The vendored htmx client, translated into markup-ready data.
+ * Everything the scripts component needs, derived from config.
  *
- * Config holds the raw ingredients — version, client defaults, extension
- * slugs, SRI hashes — and this module owns every derivation the scripts
- * view needs: which files to emit, the comma-separated allowlist htmx
- * splits on, the combined client config payload, and per-file URLs with
- * their integrity strings. The view only loops.
+ * Which files to load, the extension allowlist, the client config for
+ * the meta tag, and each file's URL with its integrity hash — the view
+ * only loops:
  *
  *     app(HtmxAssets::class)->scripts();
  *     // [['src' => '…/htmx.min.js', 'integrity' => 'sha384-…'], …]
@@ -28,11 +26,10 @@ class HtmxAssets
     public function __construct(private readonly Repository $config) {}
 
     /**
-     * Get the combined client config payload for the htmx-config meta tag.
+     * Get the client config payload for the htmx-config meta tag.
      *
-     * Strict v4 defaults plus the extension allowlist as one
-     * comma-separated string — never a JSON array, since the client
-     * approves extensions by splitting that string.
+     * Your strict v4 defaults plus the extension allowlist, merged into
+     * the one array the meta tag encodes.
      *
      * @return array<string, mixed>
      */
@@ -103,11 +100,10 @@ class HtmxAssets
     }
 
     /**
-     * Get the extension allowlist exactly as htmx expects it.
+     * Get the extensions htmx should approve, as one comma-separated string.
      *
-     * Registration names (not file slugs — upstream names are
-     * inconsistent, hence the explicit map in config), joined into the
-     * single comma-separated string the client splits on.
+     * These are registration names, which don't always match the file
+     * slugs — the config map keeps the pairing explicit.
      */
     public function extensionAllowlist(): string
     {
@@ -120,9 +116,8 @@ class HtmxAssets
     /**
      * Get one opt-in row for a vendored file outside the auto set.
      *
-     * The layout emits the core build plus extensions on its own; the
-     * ESM and max builds stay out of the markup until asked for —
-     * this is the asking:
+     * The layout already emits the core build plus extensions; the ESM
+     * and max builds stay out of your markup until you ask for one:
      *
      *     $esm = app(HtmxAssets::class)->variant('htmx.esm.js');
      *

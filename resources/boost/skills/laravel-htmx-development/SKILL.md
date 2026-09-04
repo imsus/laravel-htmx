@@ -77,9 +77,9 @@ return htmx()->headers()
     ->applyTo(response($html));
 ```
 
-All ten response headers (nine v4 plus the `hx-ptag` stamp): `trigger` (single `HX-Trigger`, JSON detail),
+All eleven response headers (nine v4, plus `ptag` and `download`): `trigger` (single `HX-Trigger`, JSON detail),
 `retarget`, `reswap`, `reselect`, `pushUrl`, `replaceUrl`, `redirect`,
-`location`, `refresh`, `ptag` — one canonical name per header, no aliases.
+`location`, `refresh`, `ptag`, `download` — one canonical name per header, no aliases.
 Equivalents exist as chainable `Response` macros
 (`response($html)->retarget('#rows')`). Navigation helpers stay 2xx — htmx
 ignores response headers on 3xx. Never emit `HX-Trigger-After-Swap` /
@@ -128,8 +128,14 @@ a real 3xx); another `4xx` when client code distinguishes failure kinds.
   hand-assembled responses.
 - Prompt answers (`hx-prompt`): read `$request->prompt()`.
 - Speculative preloads (`hx-preload`): check `$request->isPreloaded()` and
-  serve cheaply. All three read the same on every surface: request macro,
-  `htmx()` helper, `Htmx` facade.
+  serve cheaply.
+- Streams (`hx-sse`): answer with `htmx()->eventStream([...])` — plain
+  strings become HTML-swapped events, arrays carry `event`/`id`/`retry`.
+- Side downloads (`hx-download`): `response($html)->download($url)` fetches
+  the file while the body swaps normally; direct file responses just use
+  `response()->download()`.
+- Prefer the max build? Set `assets.core` to `'htmax.js'` and the scripts
+  component emits only that file — never alongside standalone extensions.
 
 ### 8. Migrate a 2.x app before runtime
 ```bash
@@ -147,7 +153,7 @@ Read before executing:
 
 - `config/laravel-htmx.php` — strict v4 defaults, SRI map, extension allowlist
 - `src/Htmx.php` — detection plus the headers() entry point (single owner; macros/helper/facade delegate)
-- `src/HtmxHeaders.php` — ten canonical header methods
+- `src/HtmxHeaders.php` — eleven canonical header methods
 
 ## Examples
 
