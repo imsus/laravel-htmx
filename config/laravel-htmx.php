@@ -9,7 +9,7 @@ return [
     | Pinned htmx version
     |--------------------------------------------------------------------------
     |
-    | Client assets are vendored at this version (see public/ and ADR-0002).
+    | Client assets are vendored at this version (see public/).
     | The scripts component and the CDN fallback both pin to it.
     |
     */
@@ -21,9 +21,9 @@ return [
     | Strict htmx 4 client defaults
     |--------------------------------------------------------------------------
     |
-    | Shipped as-is per ADR-0001: explicit inheritance (no implicit opt-in),
-    | minimal swap exclusions (error responses swap by default), a 60s
-    | fetch timeout, and server re-fetch on history misses.
+    | Strict htmx 4 client defaults: explicit inheritance (no implicit
+    | opt-in), minimal swap exclusions (error responses swap by default),
+    | a 60s fetch timeout, and server re-fetch on history misses.
     |
     */
 
@@ -49,7 +49,7 @@ return [
     | Assets
     |--------------------------------------------------------------------------
     |
-    | Vendored-first delivery per ADR-0002: the scripts component emits local
+    | Vendored-first delivery: the scripts component emits local
     | script tags with SRI hashes. Flip cdnFallback to degrade gracefully to
     | the pinned CDN build for the version above. extensions is the explicit
     | allowlist — htmx 4 loads extensions via direct script tags, so the

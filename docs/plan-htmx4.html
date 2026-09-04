@@ -72,7 +72,7 @@ footer{border-top:1px solid var(--line);color:var(--slate);font-size:.85rem}
 <button class="theme" id="theme" type="button">Toggle theme</button>
 <p class="eyebrow">imsus / laravel-htmx &middot; htmx 4.0.0</p>
 <h1>Laravel Htmx 4 — Build Plan</h1>
-<p class="sub">Full server adapter, strict v4 defaults, manual <code>fragmentIf</code> rendering. Grilled Q1–Q12 settled; glossary in <code>CONTEXT.md</code>; decisions in <code>docs/adr/0001–0002</code>.</p>
+<p class="sub">Full server adapter, strict v4 defaults, manual <code>fragmentIf</code> rendering. Grilled Q1–Q12 settled; glossary in <code>CONTEXT.md</code>.</p>
 </div>
 </header>
 <nav class="phases" aria-label="Phases">
@@ -88,8 +88,8 @@ footer{border-top:1px solid var(--line);color:var(--slate);font-size:.85rem}
 <tbody>
 <tr><td>Q1/Q5</td><td>Full server adapter, core first</td><td>v4 breakage is all server-visible; helpers alone leave apps re-solving partials, errors, assets.</td></tr>
 <tr><td>Q2/Q9/Q12</td><td>Macros + <code>htmx()</code> primary, thin <code>Htmx</code> facade; aliases <code>target/swap/push/replace</code> only</td><td>Macros suit middleware; facade suits controllers; four aliases cover daily typing, rest stay single-named.</td></tr>
-<tr><td>Q3/Q10</td><td>Pinned vendored assets + SRI, <code>cdnFallback</code> toggle</td><td>v4 loads extensions by <code>&lt;script&gt;</code>; package must own the list. See ADR-0002.</td></tr>
-<tr><td>Q4</td><td>Strict v4 defaults; 2.x values commented opt-in</td><td>Compat shims hide breakage. See ADR-0001.</td></tr>
+<tr><td>Q3/Q10</td><td>Pinned vendored assets + SRI, <code>cdnFallback</code> toggle</td><td>v4 loads extensions by <code>&lt;script&gt;</code>; package must own the list.</td></tr>
+<tr><td>Q4</td><td>Strict v4 defaults; 2.x values commented opt-in</td><td>Compat shims hide breakage.</td></tr>
 <tr><td>Q6/Q11</td><td>Single-view <code>fragmentIf(htmx()-&gt;isPartial(), 'rows')</code> house pattern</td><td>One file holds page + rows; <code>@fragment('rows')</code> is the mechanism, <code>partial</code> the wire concept.</td></tr>
 <tr><td>Q7</td><td><code>422</code> + error fragment default; <code>hx-status</code> for exceptions</td><td>v4 swaps error responses; error HTML <em>is</em> swap content.</td></tr>
 <tr><td>Q8</td><td><code>isPartial()</code> false on history-restore; boosted defaults to full page</td><td>History re-fetch and boosted nav need full documents.</td></tr>
@@ -188,7 +188,7 @@ source()/target() = HX-Source / HX-Target (tag#id format)</pre>
 <pre>composer test          # analyse + lint:check + type-coverage 100 + pest
 vendor/bin/pest        # single run while iterating
 composer build/serve   # workbench fragment + 422 + history demo</pre>
-<p>ADRs written: <code>docs/adr/0001-strict-htmx4-defaults.md</code>, <code>docs/adr/0002-vendored-assets-with-sri.md</code>. Glossary: <code>CONTEXT.md</code>.</p>
+<p>Glossary: <code>CONTEXT.md</code>.</p>
 </section>
 </main>
 <footer><div class="wrap">Plan preserves Q1–Q12 order and wording. Next action: start Phase 1 with a failing Pest test for <code>isPartial()</code> + <code>fragmentIf</code>.</div></footer>

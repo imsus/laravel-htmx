@@ -9,7 +9,7 @@ use Symfony\Component\Finder\Finder;
 /**
  * Derive SRI hashes from vendored bytes on disk.
  *
- * The integrity map in config stays the carrier ADR-0002 requires —
+ * The integrity map in config stays the single source of truth —
  * this is how its values are born, so a refresh never means
  * hand-copying hashes again. Filenames sort, JavaScript only:
  *
