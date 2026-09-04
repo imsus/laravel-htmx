@@ -7,23 +7,60 @@ namespace Htmx\Htmx;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 /**
- * Fluent builder for the nine htmx 4 response headers.
+ * Tell htmx what to do after it receives your response.
  *
- * Always fresh (never shared): reach it via htmx()->headers(), the Htmx
- * facade, or the Response macros. Navigation helpers only set headers —
- * htmx ignores response headers on 3xx, so these responses stay 2xx and the
- * client navigates itself.
+ * Grab a fresh builder, describe the client-side behavior fluently, then
+ * apply it to any response. Nothing is sent until you say so:
+ *
+ *     return htmx()->headers()
+ *         ->retarget('#form-errors')
+ *         ->reswap('innerHTML')
+ *         ->applyTo(response($html, 422));
+ *
+ * Prefer the tiny Response macros for one-liners:
+ *
+ *     return response($html)->retarget('#rows');
+ *
+ * One builder per response, never shared. And a small htmx rule worth
+ * knowing: htmx ignores response headers on 3xx redirects, so navigation
+ * helpers like redirect() and location() stay 2xx and let the client
+ * navigate itself.
  */
 class HtmxHeaders
 {
+    /**
+     * Every header method, in registration order.
+     *
+     * The provider derives the Response macros from this list, so adding
+     * a header means adding one method plus one entry here.
+     *
+     * @var list<string>
+     */
+    public const array RESPONSE_MACROS = [
+        'trigger',
+        'retarget',
+        'reswap',
+        'reselect',
+        'pushUrl',
+        'replaceUrl',
+        'redirect',
+        'location',
+        'refresh',
+        'ptag',
+    ];
+
     /**
      * @var array<string, string>
      */
     private array $headers = [];
 
     /**
-     * Single HX-Trigger header: plain names, or a JSON object for detail.
-     * A $target with a string event nests as {"event":{"target":"..."}}.
+     * Fire a client-side event after the swap.
+     *
+     * Pass a single name, or an array when you want to send detail along:
+     *
+     *     ->trigger('item-created');
+     *     ->trigger(['item-created' => ['id' => $item->id]]);
      *
      * @param  string|array<string, mixed>  $events
      */
@@ -40,6 +77,11 @@ class HtmxHeaders
         return $this;
     }
 
+    /**
+     * Swap the response into a different element.
+     *
+     *     ->retarget('#form-errors')
+     */
     public function retarget(string $selector): static
     {
         $this->headers['HX-Retarget'] = $selector;
@@ -48,13 +90,13 @@ class HtmxHeaders
     }
 
     /**
-     * Alias of retarget().
+     * Change how the response is swapped in.
+     *
+     * Any htmx swap strategy works: "innerHTML", "outerHTML", "beforeend",
+     * "afterbegin", "none", and friends.
+     *
+     *     ->reswap('innerHTML')
      */
-    public function target(string $selector): static
-    {
-        return $this->retarget($selector);
-    }
-
     public function reswap(string $option): static
     {
         $this->headers['HX-Reswap'] = $option;
@@ -63,13 +105,13 @@ class HtmxHeaders
     }
 
     /**
-     * Alias of reswap().
+     * Narrow the swap to a fragment inside the response.
+     *
+     * Handy when the response carries a full document but only one piece
+     * should land in the page.
+     *
+     *     ->reselect('#rows')
      */
-    public function swap(string $option): static
-    {
-        return $this->reswap($option);
-    }
-
     public function reselect(string $selector): static
     {
         $this->headers['HX-Reselect'] = $selector;
@@ -77,6 +119,14 @@ class HtmxHeaders
         return $this;
     }
 
+    /**
+     * Push a URL into the browser's history.
+     *
+     * Pass false to leave history alone, true to push the request URL.
+     *
+     *     ->pushUrl('/items?page=2')
+     *     ->pushUrl(false)
+     */
     public function pushUrl(string|bool $url): static
     {
         $this->headers['HX-Push-Url'] = $this->urlValue($url);
@@ -85,13 +135,11 @@ class HtmxHeaders
     }
 
     /**
-     * Alias of pushUrl().
+     * Replace the current history entry instead of pushing a new one.
+     *
+     * Lovely for search-as-you-type, where every keystroke should not
+     * become its own back-button stop.
      */
-    public function push(string|bool $url): static
-    {
-        return $this->pushUrl($url);
-    }
-
     public function replaceUrl(string|bool $url): static
     {
         $this->headers['HX-Replace-Url'] = $this->urlValue($url);
@@ -100,15 +148,12 @@ class HtmxHeaders
     }
 
     /**
-     * Alias of replaceUrl().
-     */
-    public function replace(string|bool $url): static
-    {
-        return $this->replaceUrl($url);
-    }
-
-    /**
-     * Client-side full-page reload to $url (stays 2xx; the client navigates).
+     * Ask htmx to navigate to a new page, without a server redirect.
+     *
+     * The response itself stays 2xx — htmx ignores response headers on
+     * real 3xx redirects, so this header does the navigating client-side.
+     *
+     *     ->redirect('/login')
      */
     public function redirect(string $url): static
     {
@@ -118,7 +163,13 @@ class HtmxHeaders
     }
 
     /**
-     * Ajax navigation without reload: plain path or htmx.ajax() options.
+     * Navigate without a full reload, optionally with swap detail.
+     *
+     * Pass a path for the simple case, or the full htmx.ajax() options
+     * array when you need control over method, target, and swap.
+     *
+     *     ->location('/items/1')
+     *     ->location(['path' => '/items/1', 'target' => '#modal'])
      *
      * @param  string|array<string, mixed>  $value
      */
@@ -131,6 +182,9 @@ class HtmxHeaders
         return $this;
     }
 
+    /**
+     * Ask htmx to reload the page, as if the user pressed refresh.
+     */
     public function refresh(): static
     {
         $this->headers['HX-Refresh'] = 'true';
@@ -139,8 +193,11 @@ class HtmxHeaders
     }
 
     /**
-     * Poll tag for the hx-ptag extension: stored on the element and sent
-     * back on the next request so the server can answer 304 when current.
+     * Stamp the response with its poll tag for the hx-ptag extension.
+     *
+     * htmx stores the tag on the element and sends it back next poll, so
+     * your controller can answer 304 when nothing changed and skip the
+     * swap entirely.
      */
     public function ptag(string $tag): static
     {
@@ -150,6 +207,8 @@ class HtmxHeaders
     }
 
     /**
+     * Get the headers collected so far, ready to set on a response.
+     *
      * @return array<string, string>
      */
     public function toArray(): array
@@ -157,6 +216,19 @@ class HtmxHeaders
         return $this->headers;
     }
 
+    /**
+     * Apply the collected headers to any Symfony-compatible response.
+     *
+     * Returns the same instance it was given, so it slots neatly at the
+     * end of a chain — and the concrete type survives for what follows:
+     *
+     *     return htmx()->headers()->refresh()->applyTo(response($html));
+     *
+     * @template T of SymfonyResponse
+     *
+     * @param  T  $response
+     * @return T
+     */
     public function applyTo(SymfonyResponse $response): SymfonyResponse
     {
         foreach ($this->headers as $name => $value) {

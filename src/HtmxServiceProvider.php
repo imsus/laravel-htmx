@@ -4,34 +4,60 @@ declare(strict_types=1);
 
 namespace Htmx\Htmx;
 
+use Htmx\Htmx\Console\Commands\HashAssetsCommand;
 use Htmx\Htmx\Console\Commands\InstallCommand;
 use Htmx\Htmx\Console\Commands\UpgradeCheckCommand;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\ServiceProvider;
 
+/**
+ * Wire htmx into your Laravel app, the Laravel way.
+ *
+ * Once registered — which happens automatically via package discovery —
+ * you get an expressive Request and Response vocabulary, a config file,
+ * Blade views, vendored client assets, and two Artisan commands.
+ * Nothing to bootstrap by hand.
+ */
 class HtmxServiceProvider extends ServiceProvider
 {
     /**
-     * Register any application services.
+     * Publish groups, shared with the install command.
+     *
+     * Renaming a tag here renames it for both publishes() calls below
+     * and htmx:install — neither side re-spells the strings.
+     *
+     * @var array<string, string>
+     */
+    public const array PUBLISH_TAGS = [
+        'config' => 'laravel-htmx-config',
+        'views' => 'laravel-htmx-views',
+        'assets' => 'laravel-htmx-assets',
+    ];
+
+    /**
+     * Register the htmx entry point in the container.
+     *
+     * A single stateless singleton sits behind the helper, the facade,
+     * and every macro, so there is exactly one definition of "is this
+     * a partial?" to learn and trust.
      */
     public function register(): void
     {
         $this->mergeConfigFrom(__DIR__.'/../config/laravel-htmx.php', 'laravel-htmx');
 
-        $this->app->singleton(HtmxManager::class);
         $this->app->singleton(Htmx::class);
+        $this->app->singleton(HtmxAssets::class);
     }
 
     /**
-     * Bootstrap any application services.
+     * Boot request macros, response macros, views, and publishable assets.
      */
     public function boot(): void
     {
         $this->registerRequestMacros();
         $this->registerResponseMacros();
 
-        $this->loadViewsFrom(__DIR__.'/../resources/views', 'laravel-htmx');
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'htmx');
 
         if (! $this->app->runningInConsole()) {
@@ -40,155 +66,61 @@ class HtmxServiceProvider extends ServiceProvider
 
         $this->publishes([
             __DIR__.'/../config/laravel-htmx.php' => config_path('laravel-htmx.php'),
-        ], ['laravel-htmx', 'laravel-htmx-config']);
+        ], ['laravel-htmx', self::PUBLISH_TAGS['config']]);
 
         $this->publishes([
-            __DIR__.'/../resources/views' => resource_path('views/vendor/laravel-htmx'),
-        ], ['laravel-htmx', 'laravel-htmx-views']);
+            __DIR__.'/../resources/views' => resource_path('views/vendor/htmx'),
+        ], ['laravel-htmx', self::PUBLISH_TAGS['views']]);
 
         $this->publishes([
             __DIR__.'/../public' => public_path('vendor/laravel-htmx'),
-        ], ['laravel-htmx', 'laravel-htmx-assets']);
+        ], ['laravel-htmx', self::PUBLISH_TAGS['assets']]);
 
         $this->commands([
             InstallCommand::class,
             UpgradeCheckCommand::class,
+            HashAssetsCommand::class,
         ]);
     }
 
     /**
-     * Request macros delegate to the shared manager — no duplicated logic.
+     * Give every request a fluent htmx vocabulary.
+     *
+     * Registrations derive from Htmx::REQUEST_MACROS — one shared,
+     * stateless singleton behind them — so the detection logic lives in
+     * exactly one place:
+     *
+     *     $request->isPartial();
+     *     $request->target();
      */
     private function registerRequestMacros(): void
     {
-        Request::macro('isHtmx', function (): bool {
-            return app(HtmxManager::class)->isHtmx($this);
-        });
+        $htmx = $this->app->make(Htmx::class);
 
-        Request::macro('isPartial', function (): bool {
-            return app(HtmxManager::class)->isPartial($this);
-        });
-
-        Request::macro('isBoosted', function (): bool {
-            return app(HtmxManager::class)->isBoosted($this);
-        });
-
-        Request::macro('isHistoryRestore', function (): bool {
-            return app(HtmxManager::class)->isHistoryRestore($this);
-        });
-
-        Request::macro('source', function (): ?string {
-            return app(HtmxManager::class)->source($this);
-        });
-
-        Request::macro('target', function (): ?string {
-            return app(HtmxManager::class)->target($this);
-        });
-
-        Request::macro('requestType', function (): ?string {
-            return app(HtmxManager::class)->requestType($this);
-        });
-
-        Request::macro('ptag', function (): ?string {
-            return app(HtmxManager::class)->ptag($this);
-        });
-
-        Request::macro('prompt', function (): ?string {
-            return app(HtmxManager::class)->prompt($this);
-        });
-
-        Request::macro('isPreloaded', function (): bool {
-            return app(HtmxManager::class)->isPreloaded($this);
-        });
+        foreach (Htmx::REQUEST_MACROS as $method) {
+            Request::macro($method, function () use ($htmx, $method) {
+                return $htmx->$method($this);
+            });
+        }
     }
 
     /**
-     * Response macros apply one builder header and stay chainable.
+     * Give every response a one-line way to speak htmx.
+     *
+     * Registrations derive from HtmxHeaders::RESPONSE_MACROS — each macro
+     * forwards its arguments to a fresh builder and applies it, staying
+     * chainable with the rest of your response building:
+     *
+     *     return response($html)->retarget('#rows')->reswap('beforeend');
      */
     private function registerResponseMacros(): void
     {
-        Response::macro('trigger', function (string|array $events, ?string $target = null): Response {
-            (new HtmxHeaders)->trigger($events, $target)->applyTo($this);
+        $htmx = $this->app->make(Htmx::class);
 
-            return $this;
-        });
-
-        Response::macro('retarget', function (string $selector): Response {
-            (new HtmxHeaders)->retarget($selector)->applyTo($this);
-
-            return $this;
-        });
-
-        Response::macro('target', function (string $selector): Response {
-            (new HtmxHeaders)->target($selector)->applyTo($this);
-
-            return $this;
-        });
-
-        Response::macro('reswap', function (string $option): Response {
-            (new HtmxHeaders)->reswap($option)->applyTo($this);
-
-            return $this;
-        });
-
-        Response::macro('swap', function (string $option): Response {
-            (new HtmxHeaders)->swap($option)->applyTo($this);
-
-            return $this;
-        });
-
-        Response::macro('reselect', function (string $selector): Response {
-            (new HtmxHeaders)->reselect($selector)->applyTo($this);
-
-            return $this;
-        });
-
-        Response::macro('pushUrl', function (string|bool $url): Response {
-            (new HtmxHeaders)->pushUrl($url)->applyTo($this);
-
-            return $this;
-        });
-
-        Response::macro('push', function (string|bool $url): Response {
-            (new HtmxHeaders)->push($url)->applyTo($this);
-
-            return $this;
-        });
-
-        Response::macro('replaceUrl', function (string|bool $url): Response {
-            (new HtmxHeaders)->replaceUrl($url)->applyTo($this);
-
-            return $this;
-        });
-
-        Response::macro('replace', function (string|bool $url): Response {
-            (new HtmxHeaders)->replace($url)->applyTo($this);
-
-            return $this;
-        });
-
-        Response::macro('redirect', function (string $url): Response {
-            (new HtmxHeaders)->redirect($url)->applyTo($this);
-
-            return $this;
-        });
-
-        Response::macro('location', function (string|array $value): Response {
-            (new HtmxHeaders)->location($value)->applyTo($this);
-
-            return $this;
-        });
-
-        Response::macro('refresh', function (): Response {
-            (new HtmxHeaders)->refresh()->applyTo($this);
-
-            return $this;
-        });
-
-        Response::macro('ptag', function (string $tag): Response {
-            (new HtmxHeaders)->ptag($tag)->applyTo($this);
-
-            return $this;
-        });
+        foreach (HtmxHeaders::RESPONSE_MACROS as $method) {
+            Response::macro($method, function (...$args) use ($htmx, $method): Response {
+                return $htmx->headers()->$method(...$args)->applyTo($this);
+            });
+        }
     }
 }

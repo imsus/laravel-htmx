@@ -51,14 +51,14 @@ return [
     |
     | Vendored-first delivery per ADR-0002: the scripts component emits local
     | script tags with SRI hashes. Flip cdnFallback to degrade gracefully to
-    | the pinned CDN build. extensions is the explicit allowlist — htmx 4
-    | loads extensions via direct script tags, so the package owns the list.
+    | the pinned CDN build for the version above. extensions is the explicit
+    | allowlist — htmx 4 loads extensions via direct script tags, so the
+    | package owns the list.
     |
     */
 
     'assets' => [
         'cdnFallback' => false,
-        'cdnBase' => 'https://cdn.jsdelivr.net/npm/htmx.org@4.0.0/',
         'extensions' => [
             // Vendored script slug => extension registration name. htmx 4
             // approves extensions by registration name against a

@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use Htmx\Htmx\Facades\Htmx as HtmxFacade;
+use Htmx\Htmx\HtmxHeaders;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
 
 function headerProbeRoutes(): void
@@ -26,22 +28,12 @@ function headerProbeRoutes(): void
             ->applyTo(response('<tr></tr>'));
     });
 
-    Route::get('/_htmx-headers-alias-original', function () {
+    Route::get('/_htmx-headers-targeted', function () {
         return htmx()->headers()
-            ->retarget('#rows')
-            ->reswap('outerHTML')
-            ->pushUrl('/items')
-            ->replaceUrl('/other')
-            ->applyTo(response('x'));
-    });
-
-    Route::get('/_htmx-headers-alias-aliased', function () {
-        return htmx()->headers()
-            ->target('#rows')
-            ->swap('outerHTML')
-            ->push('/items')
-            ->replace('/other')
-            ->applyTo(response('x'));
+            ->trigger('saved', '#toast')
+            ->pushUrl(false)
+            ->replaceUrl(true)
+            ->applyTo(response('<tr></tr>'));
     });
 
     Route::get('/_htmx-headers-macros', function () {
@@ -61,7 +53,7 @@ function headerProbeRoutes(): void
     });
 }
 
-it('emits all nine v4 headers with correct names and shapes', function () {
+it('emits all ten response headers with correct names and shapes', function () {
     headerProbeRoutes();
 
     test()->get('/_htmx-headers-full')->assertOk()
@@ -78,19 +70,22 @@ it('emits all nine v4 headers with correct names and shapes', function () {
         ->assertHeader('HX-Refresh', 'true');
 });
 
-it('proves alias equivalence on emitted headers', function () {
+it('encodes targeted triggers and boolean urls', function () {
     headerProbeRoutes();
 
-    $headers = ['HX-Retarget', 'HX-Reswap', 'HX-Push-Url', 'HX-Replace-Url'];
+    test()->get('/_htmx-headers-targeted')->assertOk()
+        ->assertHeader('HX-Trigger', '{"saved":{"target":"#toast"}}')
+        ->assertHeader('HX-Push-Url', 'false')
+        ->assertHeader('HX-Replace-Url', 'true');
+});
 
-    $original = test()->get('/_htmx-headers-alias-original')->assertOk();
-    $aliased = test()->get('/_htmx-headers-alias-aliased')->assertOk();
-
-    foreach ($headers as $name) {
-        expect($aliased->headers->get($name))->toBe($original->headers->get($name));
+it('derives one response macro per header method', function () {
+    foreach (HtmxHeaders::RESPONSE_MACROS as $method) {
+        expect(method_exists(HtmxHeaders::class, $method))->toBeTrue();
+        expect(Response::hasMacro($method))->toBeTrue();
     }
 
-    expect($original->headers->get('HX-Retarget'))->toBe('#rows');
+    expect(HtmxHeaders::RESPONSE_MACROS)->toHaveCount(10);
 });
 
 it('chains response macros onto the response', function () {

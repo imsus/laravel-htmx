@@ -16,14 +16,11 @@ function upgradePath(string $name): string
     return __DIR__.'/../Fixtures/upgrade/'.$name;
 }
 
-it('flags 2.x renames, inheritance, events, and extension includes', function () {
+it('flags a legacy template through the command', function () {
     [$code, $output] = upgradeOutput(upgradePath('legacy.blade.php'));
 
-    expect($code)->toBe(1);
-
-    foreach (['hx-vars', 'hx-ext', 'hx-inherit', 'from:(', 'htmx:xhr:loadend', 'HX-Trigger-After-Swap', 'ext/json-enc.js'] as $needle) {
-        expect($output)->toContain($needle);
-    }
+    expect($code)->toBe(1)
+        ->and($output)->toContain('hx-vars');
 });
 
 it('passes a migrated template', function () {

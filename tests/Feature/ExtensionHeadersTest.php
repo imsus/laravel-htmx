@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Htmx\Htmx\Facades\Htmx as HtmxFacade;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\ViewErrorBag;
 
 function extensionProbeRoutes(): void
 {
@@ -17,13 +18,14 @@ function extensionProbeRoutes(): void
     });
 
     Route::get('/_htmx-news', function (Request $request) {
-        $current = 'v42';
+        view()->addLocation(__DIR__.'/../Fixtures/views');
 
-        if ($request->ptag() === $current) {
-            return response('', 304);
-        }
-
-        return htmx()->headers()->ptag($current)->applyTo(response('<div>Breaking: htmx 4 released!</div>'));
+        return htmx()->poll(
+            view('demo-page', ['items' => ['Apples'], 'errors' => new ViewErrorBag]),
+            'rows',
+            'v42',
+            $request,
+        );
     });
 
     Route::get('/_htmx-ptag-macro', function () {
@@ -63,7 +65,8 @@ it('skips the swap with 304 when the poll tag is current', function () {
     test()->get('/_htmx-news')
         ->assertOk()
         ->assertHeader('HX-PTag', 'v42')
-        ->assertSee('Breaking: htmx 4 released!');
+        ->assertSee('<ul id="rows">', false)
+        ->assertDontSee('<h1>Items</h1>', false);
 });
 
 it('emits the poll tag through the response macro', function () {
@@ -72,4 +75,16 @@ it('emits the poll tag through the response macro', function () {
     test()->get('/_htmx-ptag-macro')
         ->assertOk()
         ->assertHeader('HX-PTag', 'v42');
+});
+
+it('folds the preload flag case', function () {
+    extensionProbeRoutes();
+
+    $via = test()->get('/_htmx-ptag-probe', ['HX-Preloaded' => 'True'])
+        ->assertOk()
+        ->json();
+
+    foreach (['macro', 'helper', 'facade'] as $surface) {
+        expect($via[$surface]['isPreloaded'])->toBeTrue();
+    }
 });

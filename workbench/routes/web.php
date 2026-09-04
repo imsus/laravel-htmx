@@ -26,15 +26,11 @@ Route::post('/items', function (Request $request) use ($demoView) {
     $validator = Validator::make($request->all(), ['name' => 'required|min:3']);
 
     if ($validator->fails()) {
-        return htmx()
-            ->headers()
-            ->retarget('#form-errors')
-            ->reswap('innerHTML')
-            ->applyTo(response(
-                $demoView(['items' => [], 'errors' => $validator->errors()])
-                    ->fragmentIf(true, 'form-errors'),
-                422,
-            ));
+        return htmx()->errorPartial(
+            $demoView(['items' => [], 'errors' => $validator->errors()]),
+            'form-errors',
+            '#form-errors',
+        );
     }
 
     $items = [...session('items', ['Apples', 'Oranges']), $request->input('name')];
@@ -104,31 +100,21 @@ Route::delete('/patterns/items/{name}', function (Request $request, string $name
 Route::post('/patterns/validate', function (Request $request) use ($patternsView, $patternItems) {
     $validator = Validator::make($request->all(), ['name' => 'required|min:3']);
 
-    $headers = htmx()->headers()->retarget('#v-errors')->reswap('innerHTML');
+    $fails = $validator->fails();
 
-    if ($validator->fails()) {
-        return $headers->applyTo(response(
-            $patternsView(['items' => $patternItems(), 'errors' => $validator->errors(), 'q' => ''])
-                ->fragmentIf(true, 'v-errors'),
-            422,
-        ));
-    }
-
-    return $headers->applyTo(response(
-        $patternsView(['items' => $patternItems(), 'errors' => new ViewErrorBag, 'q' => ''])
-            ->fragmentIf(true, 'v-errors'),
-    ));
+    return htmx()->errorPartial(
+        $patternsView(['items' => $patternItems(), 'errors' => $fails ? $validator->errors() : new ViewErrorBag, 'q' => '']),
+        'v-errors',
+        '#v-errors',
+        $fails ? 422 : 200,
+    );
 })->middleware(DemoDelay::class);
 
 Route::get('/patterns/news', function (Request $request) use ($patternsView, $patternItems) {
-    $current = 'v'.count($patternItems());
-
-    if ($request->ptag() === $current) {
-        return response('', 304);
-    }
-
-    return htmx()->headers()->ptag($current)->applyTo(response(
-        $patternsView(['items' => $patternItems(), 'errors' => new ViewErrorBag, 'q' => ''])
-            ->fragmentIf(true, 'news'),
-    ));
+    return htmx()->poll(
+        $patternsView(['items' => $patternItems(), 'errors' => new ViewErrorBag, 'q' => '']),
+        'news',
+        'v'.count($patternItems()),
+        $request,
+    );
 })->middleware(DemoDelay::class);

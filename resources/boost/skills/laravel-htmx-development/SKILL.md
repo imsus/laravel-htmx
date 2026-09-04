@@ -77,10 +77,10 @@ return htmx()->headers()
     ->applyTo(response($html));
 ```
 
-All nine v4 headers: `trigger` (single `HX-Trigger`, JSON detail),
+All ten response headers (nine v4 plus the `hx-ptag` stamp): `trigger` (single `HX-Trigger`, JSON detail),
 `retarget`, `reswap`, `reselect`, `pushUrl`, `replaceUrl`, `redirect`,
-`location`, `refresh`. Short aliases for the daily four: `target`, `swap`,
-`push`, `replace`. Equivalents exist as chainable `Response` macros
+`location`, `refresh`, `ptag` — one canonical name per header, no aliases.
+Equivalents exist as chainable `Response` macros
 (`response($html)->retarget('#rows')`). Navigation helpers stay 2xx — htmx
 ignores response headers on 3xx. Never emit `HX-Trigger-After-Swap` /
 `HX-Trigger-After-Settle`: removed in v4.
@@ -92,13 +92,15 @@ so the swap never destroys the list it validates:
 
 ```php
 if ($validator->fails()) {
-    return htmx()->headers()->retarget('#form-errors')->reswap('innerHTML')->applyTo(response(
-        view('items', ['items' => [], 'errors' => $validator->errors()])
-            ->fragmentIf(true, 'form-errors'),
-        422,
-    ));
+    return htmx()->errorPartial(
+        view('items', ['items' => [], 'errors' => $validator->errors()]),
+        'form-errors',
+        '#form-errors',
+    );
 }
 ```
+
+One call renders the named Fragment alone, retargets the surviving error slot with `innerHTML`, and answers `422`. Pass a fourth argument to override the status per target; reach for the manual `headers()` chain only for the exceptional shapes below.
 
 Per-target overrides: `200` when the target renders handled content itself;
 `200` + `HX-Redirect`/`HX-Location` when the failure leaves the page (never
@@ -119,9 +121,11 @@ a real 3xx); another `4xx` when client code distinguishes failure kinds.
 
 ### 7. Use the server-backed extensions
 
-- Polling without wasted swaps (`hx-ptag`): compare `$request->ptag()` with
-  the current version, return `response('', 304)` when unchanged, else stamp
-  the response with `->ptag($current)` (builder or `Response` macro).
+- Polling without wasted swaps (`hx-ptag`): answer with
+  `htmx()->poll($view, 'news', $current)` — a matching incoming tag
+  returns an empty `304`, otherwise the Fragment renders stamped with
+  the new tag. The `ptag($tag)` builder and `Response` macro remain for
+  hand-assembled responses.
 - Prompt answers (`hx-prompt`): read `$request->prompt()`.
 - Speculative preloads (`hx-preload`): check `$request->isPreloaded()` and
   serve cheaply. All three read the same on every surface: request macro,
@@ -142,8 +146,8 @@ selectors. Exits non-zero while findings remain.
 Read before executing:
 
 - `config/laravel-htmx.php` — strict v4 defaults, SRI map, extension allowlist
-- `src/HtmxManager.php` — detection (single owner; macros/helper/facade delegate)
-- `src/HtmxHeaders.php` — nine header methods + four aliases
+- `src/Htmx.php` — detection plus the headers() entry point (single owner; macros/helper/facade delegate)
+- `src/HtmxHeaders.php` — ten canonical header methods
 
 ## Examples
 

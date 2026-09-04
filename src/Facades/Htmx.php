@@ -7,7 +7,31 @@ namespace Htmx\Htmx\Facades;
 use Illuminate\Support\Facades\Facade;
 
 /**
+ * Your static-flavored shortcut to the htmx entry point.
+ *
+ *     use Htmx\Htmx\Facades\Htmx;
+ *
+ *     Htmx::isPartial();
+ *     Htmx::headers()->retarget('#rows');
+ *
+ * Prefer the htmx() helper or $request macros in controllers — reach for
+ * the facade in service classes and jobs where injection feels heavy.
+ *
  * @see \Htmx\Htmx\Htmx
+ *
+ * @method static bool isHtmx(\Illuminate\Http\Request|null $request = null)
+ * @method static bool isPartial(\Illuminate\Http\Request|null $request = null)
+ * @method static bool isBoosted(\Illuminate\Http\Request|null $request = null)
+ * @method static bool isHistoryRestore(\Illuminate\Http\Request|null $request = null)
+ * @method static string|null source(\Illuminate\Http\Request|null $request = null)
+ * @method static string|null target(\Illuminate\Http\Request|null $request = null)
+ * @method static string|null requestType(\Illuminate\Http\Request|null $request = null)
+ * @method static string|null ptag(\Illuminate\Http\Request|null $request = null)
+ * @method static string|null prompt(\Illuminate\Http\Request|null $request = null)
+ * @method static bool isPreloaded(\Illuminate\Http\Request|null $request = null)
+ * @method static \Htmx\Htmx\HtmxHeaders headers()
+ * @method static \Illuminate\Http\Response errorPartial(\Illuminate\View\View $view, string $fragment, string $slot, int $status = 422)
+ * @method static \Illuminate\Http\Response poll(\Illuminate\View\View $view, string $fragment, string $tag, \Illuminate\Http\Request|null $request = null)
  */
 class Htmx extends Facade
 {

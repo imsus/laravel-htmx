@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Htmx\Htmx\Facades\Htmx as HtmxFacade;
 use Htmx\Htmx\Htmx;
 use Illuminate\Support\Facades\Artisan;
 
@@ -18,10 +19,24 @@ it('merges the package config', function () {
 });
 
 it('loads the package views', function () {
-    expect(view()->exists('laravel-htmx::components.scripts'))->toBeTrue()
-        ->and(view()->exists('htmx::components.scripts'))->toBeTrue();
+    expect(view()->exists('htmx::components.scripts'))->toBeTrue();
 });
 
 it('registers the artisan commands', function () {
-    expect(array_keys(Artisan::all()))->toContain('htmx:install', 'htmx:upgrade-check');
+    expect(array_keys(Artisan::all()))->toContain('htmx:install', 'htmx:upgrade-check', 'htmx:hash-assets');
+});
+
+it('mirrors the Htmx interface on the facade', function () {
+    $docblock = (string) file_get_contents((string) (new ReflectionClass(HtmxFacade::class))->getFileName());
+
+    preg_match_all('/@method\s+static\s+\S+\s+(\w+)\(/', $docblock, $matches);
+
+    $actual = $matches[1];
+    sort($actual);
+
+    // Response macros live behind headers(), not on the entry point.
+    $expected = array_merge(Htmx::REQUEST_MACROS, ['headers', 'errorPartial', 'poll']);
+    sort($expected);
+
+    expect($actual)->toBe($expected);
 });

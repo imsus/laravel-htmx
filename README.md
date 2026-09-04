@@ -11,53 +11,41 @@
     <a href="https://packagist.org/packages/imsus/laravel-htmx"><img src="https://img.shields.io/packagist/dt/imsus/laravel-htmx.svg?style=flat-square" alt="Total Downloads"></a>
 </p>
 
-HTMX integration for Laravel
+Build dynamic interfaces with the simplicity of Blade. Laravel HTMX lets your server speak fluent htmx 4 — fragments, swaps, redirects — without reaching for a JavaScript framework.
+
+You're going to love how little changes. Your Blade views stay whole. Your controllers gain one expressive branch. htmx handles the rest.
 
 ## Installation
 
-You can install the package via Composer:
+Install the package via Composer:
 
 ```bash
 composer require imsus/laravel-htmx
 ```
 
-Publish config, views, and pinned htmx 4.0.0 assets in one step:
+Then set everything up with a single command. Config, views, and the pinned htmx 4.0.0 client land exactly where Laravel expects them:
 
 ```bash
 php artisan htmx:install
 ```
 
-Or publish all of the package's resources at once:
+Prefer to publish things yourself? You can publish everything at once:
 
 ```bash
 php artisan vendor:publish --tag="laravel-htmx"
 ```
 
-Or, you may publish each resource individually:
-
-### Publishing the Configuration File
+Or piece by piece:
 
 ```bash
 php artisan vendor:publish --tag="laravel-htmx-config"
-```
-
-### Publishing the Views
-
-```bash
 php artisan vendor:publish --tag="laravel-htmx-views"
-```
-
-### Publishing the Public Assets
-
-```bash
 php artisan vendor:publish --tag="laravel-htmx-assets"
 ```
 
-## Usage
+## Your first fragment
 
-### Partial vs full page
-
-Keep the page and its fragments in one Blade view. The `partial` check is the only branch:
+Here is the whole mental model: keep the page and its fragments in one Blade view, then let htmx ask for just the piece it needs.
 
 ```blade
 {{-- resources/views/items.blade.php --}}
@@ -81,15 +69,19 @@ Route::get('/items', function (Request $request) {
 });
 ```
 
-Htmx requests get the `rows` fragment only; every other request — including
-history-restore and boosted navigation — gets the full page.
+That's it. htmx requests receive just the `rows` fragment. Everyone else — first visits, boosted navigation, history restores — receives the full page with its layout. You never have to think about which is which; `isPartial()` already knows.
 
-### Validation errors
+Three spellings, same answer. Pick the one that reads best where you are:
 
-htmx 4 swaps error responses by default, so return validation failures as an
-error `partial` with `422`. Retarget it to a dedicated error slot so the swap
-never destroys the list it validates — the slot is always present in the page,
-the fragment carries only the messages:
+```php
+$request->isPartial(); // In controllers — my favorite.
+htmx()->isPartial();   // Anywhere via the helper.
+Htmx::isPartial();     // Via the facade in services and jobs.
+```
+
+## Handling validation beautifully
+
+htmx 4 swaps error responses right into the page, so validation failures feel effortless. Return a `422` with your error fragment, retargeted at a little slot that always lives in the page:
 
 ```blade
 <div id="form-errors"></div>
@@ -106,45 +98,36 @@ Route::post('/items', function (Request $request) {
     $validator = Validator::make($request->all(), ['name' => 'required|min:3']);
 
     if ($validator->fails()) {
-        return htmx()
-            ->headers()
-            ->retarget('#form-errors')
-            ->reswap('innerHTML') // fill the slot; without this the form's outerHTML swap would replace (and destroy) it
-            ->applyTo(response(
-                view('items', ['items' => [], 'errors' => $validator->errors()])
-                    ->fragmentIf(true, 'form-errors'),
-                422
-            ));
+        return htmx()->errorPartial(
+            view('items', ['items' => [], 'errors' => $validator->errors()]),
+            'form-errors',
+            '#form-errors',
+        );
     }
 
     // ...
 });
 ```
 
-### Per-target status overrides
+One call renders the `form-errors` fragment on its own, retargets the dedicated `#form-errors` slot with `innerHTML`, and answers `422`. The slot is always present in the page and carries only the messages — and because the swap is `innerHTML` rather than `outerHTML`, the slot survives to see the next submit.
 
-The `422` default fits form targets. For exceptional targets, override per
-response instead of changing the default:
+For one-liners, skip the builder and talk straight to the response:
 
-- Swap without error semantics: return the error `partial` with `200` when the
-  target must render content the app handles itself (e.g. a live region that
-  announces both success and failure markup the same way).
-- Navigate instead of swapping: return `200` with `HX-Redirect` or
-  `HX-Location` (via `htmx()->headers()`) when the failure leaves the current
-  page behind — for example an expired session that must land on login. Never
-  use a real `3xx` status: htmx ignores response headers on `3xx` responses.
-- Keep the failure visible to error listeners: return another `4xx` status
-  with the error `partial` when client code distinguishes failure kinds.
+```php
+return response($html)->retarget('#rows');
+```
 
-See `workbench/routes/web.php` (`/`) for a runnable fragment, `422`, and
-history-restore demo, and `/patterns` for a server-communication gallery —
-active search (`partial` + `HX-Push-Url`), delete in place (`HX-Trigger`
-toast), and active validation (`422` error `partial`).
+Sometimes the default doesn't fit, and that's fine — override per response:
 
-### Client scripts and config
+- **Just render it:** return the error partial with `200` when the target handles both success and failure markup itself, like a live region.
+- **Move along:** return `200` with `HX-Redirect` or `HX-Location` when the failure leaves the page behind, like an expired session heading to login. Heads up — never use a real `3xx` here; htmx ignores response headers on redirects.
+- **Stay loud:** return another `4xx` with the error partial when your client code distinguishes failure kinds.
 
-Include the client once per layout — versioned scripts with SRI hashes, the
-strict v4 config meta tag, and the extension allowlist:
+Curious how it all fits together? Explore `workbench/routes/web.php` — `/` is a runnable fragment, `422`, and history-restore demo, while `/patterns` is a little gallery of active search, delete-in-place toasts, and live validation.
+
+## Including the client
+
+Drop the client into your layout once, and you're done:
 
 ```blade
 <head>
@@ -152,28 +135,28 @@ strict v4 config meta tag, and the extension allowlist:
 </head>
 ```
 
-Strict v4 defaults ship in `config/laravel-htmx.php`: explicit inheritance
-off, minimal swap exclusions (`204`, `304`), a 60s fetch timeout, and server
-re-fetch history. 2.x-compatible values exist only as commented opt-ins.
-Set `assets.cdnFallback` to `true` to degrade to the pinned
-`htmx.org@4.0.0` CDN build; `assets.extensions` is the explicit allowlist
-(htmx 4 loads extensions via direct `<script>` tags, so the package owns the
-list). The ESM build is vendored for bundler consumers but not auto-included.
+This prints versioned scripts with SRI hashes, the strict v4 config meta tag, and your extension allowlist. Sensible defaults ship in `config/laravel-htmx.php` — explicit inheritance off, minimal swap exclusions (`204`, `304`), a 60 second fetch timeout, and server re-fetch history. If you're migrating from 2.x, friendlier legacy values wait as commented opt-ins.
 
-### Boosted layouts and row deletes
+Need a CDN safety net? Flip `assets.cdnFallback` to `true` and the pinned `htmx.org@4.0.0` build steps in when local assets are missing. Extensions live in `assets.extensions` — htmx 4 loads them as direct `<script>` tags, so the package owns the list. The ESM and max builds ship vendored but stay out of your markup until you ask for one:
 
-Boosted navigation (`hx-boost`) defaults to a `full page` — never a layout-less
-`partial` — because `isPartial()` is false for boosted requests. Client events
-are `htmx:*` names; XHR-era events (`htmx:xhr:*`, `htmx:abort`) never fire
-since v4 uses `fetch()`. Quote `from:`/`target:` selectors containing spaces
-or commas with single quotes. Deletes scoped to a row's form:
+```blade
+@php($esm = app(\Htmx\Htmx\HtmxAssets::class)->variant('htmx.esm.js'))
+<script type="module" src="{{ $esm['src'] }}" integrity="{{ $esm['integrity'] }}" crossorigin="anonymous"></script>
+```
+
+## Little things you'll appreciate
+
+**Boosted navigation just works.** Add `hx-boost` and links behave like full visits — `isPartial()` returns false, so boosted requests always get the full page. Never a layout-less fragment.
+
+**Events are modern.** Listen for `htmx:*` — the old `htmx:xhr:*` and `htmx:abort` days are gone now that v4 rides on `fetch()`. If your `from:` or `target:` selectors contain spaces or commas, wrap them in single quotes.
+
+**Deletes stay tidy.** Scope a delete to its row's form:
 
 ```html
 <button hx-delete="/items/1" hx-include="closest form">Delete</button>
 ```
 
-Forms submit as usual — file uploads just need explicit multipart encoding,
-and the `422` error-`partial` pattern applies unchanged:
+**Uploads feel normal.** Declare the encoding, target your error slot, and the server reads files like always:
 
 ```html
 <form hx-post="/avatar" hx-encoding="multipart/form-data" hx-target="#form-errors" hx-swap="innerHTML">
@@ -182,47 +165,40 @@ and the `422` error-`partial` pattern applies unchanged:
 </form>
 ```
 
-The server reads `$request->file('avatar')` normally; validation failures
-return the `422` error `partial` into `#form-errors` like any other form.
+```php
+$request->file('avatar'); // Just like any other upload.
+```
 
-### Extension server support
+Validation failures return the same `422` error partial into `#form-errors`.
 
-Three extensions need the server to speak their wire contract, so the
-package covers them (see `docs/extensions-server-support.md` for the full
-17-extension survey):
+## A few friendly extensions
+
+Three extensions ask a little of your server, so the package speaks their language (the full 17-extension survey lives in `docs/extensions-server-support.md`):
 
 ```php
-// hx-ptag: skip the swap with 304 while the poll tag is current.
-if ($request->ptag() === $current) {
-    return response('', 304);
-}
+// Skip the swap entirely while the poll tag is current.
+return htmx()->poll(view('feed', ['items' => $items]), 'news', $current);
 
-return response($html)->ptag($current);
-
-// hx-prompt: read the pre-request prompt answer.
+// Read the answer from a pre-request prompt.
 $reason = $request->prompt();
 
-// hx-preload: detect speculative preload GETs.
+// Preloads may never be seen — keep them cheap, never write.
 if ($request->isPreloaded()) {
-    // serve cheaply; the response may never be consumed.
+    // Serve something light.
 }
 ```
 
-`hx-ptag.js` ships vendored with an SRI hash and allowlist entry, emitted by
-`<x-htmx::scripts />` like the other extensions.
+`hx-ptag.js` ships vendored with its SRI hash and allowlist entry, emitted by `<x-htmx::scripts />` alongside the rest.
 
-### Upgrading from 2.x
-Scan Blade markup — including templates — before runtime:
+## Upgrading from htmx 2.x
+
+Let the computer do the boring part. This scans your Blade views — templates included — for everything that changed meaning in v4:
 
 ```bash
 php artisan htmx:upgrade-check --path=resources/views --ext=.blade.php
 ```
 
-Flags removed attributes (`hx-ext`, `hx-request`, `hx-vars`, `hx-params`),
-removed headers (`HX-Trigger-After-Swap`, `HX-Trigger-After-Settle`), XHR-era
-events, direct extension `<script>` includes, `hx-inherit` (use the
-`:inherited` modifier), and unquoted `from:(`/`target:(` selectors. Exits
-non-zero while findings remain.
+It flags removed attributes (`hx-ext`, `hx-request`, `hx-vars`, `hx-params`), removed headers (`HX-Trigger-After-Swap`, `HX-Trigger-After-Settle`), XHR-era events, direct extension `<script>` includes, `hx-inherit` (now the `:inherited` modifier), and unquoted `from:(` / `target:(` selectors. It exits non-zero while findings remain, so CI can hold the line.
 
 ## Changelog
 

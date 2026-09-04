@@ -20,15 +20,11 @@ function fragmentProbeRoutes(): void
         $validator = Validator::make($request->all(), ['name' => 'required|min:3']);
 
         if ($validator->fails()) {
-            return htmx()
-                ->headers()
-                ->retarget('#form-errors')
-                ->reswap('innerHTML')
-                ->applyTo(response(
-                    view('demo-page', ['items' => [], 'errors' => $validator->errors()])
-                        ->fragmentIf(true, 'form-errors'),
-                    422,
-                ));
+            return htmx()->errorPartial(
+                view('demo-page', ['items' => [], 'errors' => $validator->errors()]),
+                'form-errors',
+                '#form-errors',
+            );
         }
 
         return view('demo-page', ['items' => [$request->input('name')], 'errors' => new ViewErrorBag])
@@ -96,4 +92,22 @@ it('returns the rows partial on valid input', function () {
         ->assertOk()
         ->assertSee('<ul id="rows">', false)
         ->assertSee('Pears');
+});
+
+it('overrides the error status per target through one interface', function () {
+    fragmentProbeRoutes();
+
+    Route::post('/_htmx-items-live', function () {
+        return htmx()->errorPartial(
+            view('demo-page', ['items' => [], 'errors' => new ViewErrorBag]),
+            'form-errors',
+            '#form-errors',
+            200,
+        );
+    });
+
+    test()->post('/_htmx-items-live')
+        ->assertOk()
+        ->assertHeader('HX-Retarget', '#form-errors')
+        ->assertHeader('HX-Reswap', 'innerHTML');
 });

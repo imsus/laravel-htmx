@@ -157,3 +157,36 @@ it('reads source and target in tag#id format', function () {
         expect($via[$surface]['isPartial'])->toBeTrue();
     }
 });
+
+it('registers every detection affordance as a request macro', function () {
+    foreach (Htmx\Htmx\Htmx::REQUEST_MACROS as $method) {
+        expect(method_exists(Htmx\Htmx\Htmx::class, $method))->toBeTrue()
+            ->and(Request::hasMacro($method))->toBeTrue();
+    }
+});
+
+it('maps every detection affordance to a wire name except the composite', function () {
+    $headers = (new ReflectionClass(Htmx\Htmx\Htmx::class))->getConstant('HEADERS');
+
+    foreach (Htmx\Htmx\Htmx::REQUEST_MACROS as $method) {
+        if ($method === 'isPartial') {
+            continue;
+        }
+
+        expect($headers)->toHaveKey($method);
+    }
+});
+
+it('treats blank headers as absent and folds header case', function () {
+    $via = probe([
+        'HX-Request' => 'true',
+        'HX-Request-Type' => 'PARTIAL',
+        'HX-Target' => '',
+    ]);
+
+    foreach (['macro', 'helper', 'facade'] as $surface) {
+        expect($via[$surface]['target'])->toBeNull()
+            ->and($via[$surface]['requestType'])->toBe('partial')
+            ->and($via[$surface]['isPartial'])->toBeTrue();
+    }
+});
