@@ -53,7 +53,7 @@ function headerProbeRoutes(): void
     });
 }
 
-it('emits all ten response headers with correct names and shapes', function () {
+it('emits all eleven response headers with correct names and shapes', function () {
     headerProbeRoutes();
 
     test()->get('/_htmx-headers-full')->assertOk()
@@ -85,7 +85,7 @@ it('derives one response macro per header method', function () {
         expect(Response::hasMacro($method))->toBeTrue();
     }
 
-    expect(HtmxHeaders::RESPONSE_MACROS)->toHaveCount(10);
+    expect(HtmxHeaders::RESPONSE_MACROS)->toHaveCount(11);
 });
 
 it('chains response macros onto the response', function () {

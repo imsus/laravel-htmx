@@ -66,16 +66,37 @@ class HtmxAssets
     }
 
     /**
+     * Get the core build filename to emit.
+     *
+     * Either vendored core build; anything else falls back to the slim
+     * core so the layout never emits a file without an SRI hash.
+     */
+    public function coreFile(): string
+    {
+        $core = (string) $this->config->get(self::CONFIG.'.assets.core', 'htmx.min.js');
+
+        return in_array($core, ['htmx.min.js', 'htmax.js'], true) ? $core : 'htmx.min.js';
+    }
+
+    /**
      * Get the vendored filenames to emit, core build first.
+     *
+     * With the max build as core, extensions ride inside htmax.js, so
+     * only it is emitted — standalone extension scripts alongside it
+     * would register twice.
      *
      * @return list<string>
      */
     public function scriptFiles(): array
     {
+        if ($this->coreFile() === 'htmax.js') {
+            return ['htmax.js'];
+        }
+
         /** @var array<string, string> $extensions */
         $extensions = $this->config->get(self::CONFIG.'.assets.extensions', []);
 
-        return array_merge(['htmx.min.js'], array_map(
+        return array_merge([$this->coreFile()], array_map(
             fn (string $slug): string => $slug.'.js',
             array_keys($extensions),
         ));

@@ -144,6 +144,15 @@ Need a CDN safety net? Flip `assets.cdnFallback` to `true` and the pinned `htmx.
 <script type="module" src="{{ $esm['src'] }}" integrity="{{ $esm['integrity'] }}" crossorigin="anonymous"></script>
 ```
 
+Want every popular extension without managing script tags? Flip `assets.core` to `'htmax.js'` — htmx bundled with sse, ws, preload, browser-indicator, download, pending, targets, live, upsert, alpine-compat, and history-cache in one file (~6× the slim core). The scripts component then emits only `htmax.js`, never the standalone extension files alongside it. Note the bundle ships history-cache disabled — opt in when you want it:
+
+```php
+'client' => [
+    // ...
+    'historyCache' => ['disable' => false],
+],
+```
+
 ## Little things you'll appreciate
 
 **Boosted navigation just works.** Add `hx-boost` and links behave like full visits — `isPartial()` returns false, so boosted requests always get the full page. Never a layout-less fragment.
@@ -173,7 +182,7 @@ Validation failures return the same `422` error partial into `#form-errors`.
 
 ## A few friendly extensions
 
-Three extensions ask a little of your server, so the package speaks their language (the full 17-extension survey lives in `docs/extensions-server-support.md`):
+Five extensions ask a little of your server, so the package speaks their language (the full 17-extension survey lives in `docs/extensions-server-support.md`):
 
 ```php
 // Skip the swap entirely while the poll tag is current.
@@ -186,7 +195,18 @@ $reason = $request->prompt();
 if ($request->isPreloaded()) {
     // Serve something light.
 }
+
+// Stream HTML updates over one response (hx-sse).
+return htmx()->eventStream([
+    '<p>warming up</p>',
+    ['data' => '<p>done</p>', 'id' => 'e42'],
+]);
+
+// Download a file on the side while the response swaps normally.
+return response('<span>Started…</span>')->download('/files/report.pdf');
 ```
+
+Direct file responses need no helper — `response()->download()` with its `Content-Disposition: attachment` header auto-triggers the extension.
 
 `hx-ptag.js` ships vendored with its SRI hash and allowlist entry, emitted by `<x-htmx::scripts />` alongside the rest.
 

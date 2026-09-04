@@ -47,6 +47,7 @@ class HtmxHeaders
         'location',
         'refresh',
         'ptag',
+        'download',
     ];
 
     /**
@@ -202,6 +203,28 @@ class HtmxHeaders
     public function ptag(string $tag): static
     {
         $this->headers['HX-PTag'] = $tag;
+
+        return $this;
+    }
+
+    /**
+     * Start a file download on the side while the response swaps normally.
+     *
+     * The extension fetches the URL independently, so indicators and
+     * disabled elements clear correctly — unlike an HX-Redirect pointed
+     * at a file. For direct file responses, prefer
+     * `response()->download()` with a `Content-Disposition: attachment`
+     * header instead; the extension auto-detects those with no header
+     * needed here. Not to be confused with `response()->download()`,
+     * which streams a file — this only sets the HX-Download pointer.
+     *
+     *     return htmx()->headers()
+     *         ->download('/files/report.pdf')
+     *         ->applyTo(response('<span>Started…</span>'));
+     */
+    public function download(string $url): static
+    {
+        $this->headers['HX-Download'] = $url;
 
         return $this;
     }

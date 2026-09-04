@@ -7,6 +7,7 @@ namespace Htmx\Htmx;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * Read the current request the way htmx thinks about it, and tell htmx
@@ -136,6 +137,51 @@ class Htmx
         return $this->headers()
             ->ptag($tag)
             ->applyTo(response($view->fragmentIf(true, $fragment)));
+    }
+
+    /**
+     * Answer with a stream of HTML updates for the hx-sse extension.
+     *
+     * Each entry becomes one SSE block: a plain string is an unnamed
+     * event swapped as HTML, while an array may carry event, id, and
+     * retry fields around its data. Multiline data splits into one
+     * `data:` line per line, and every block ends with a blank line:
+     *
+     *     return htmx()->eventStream([
+     *         '<p>warming up</p>',
+     *         ['data' => '<p>done</p>', 'id' => 'e42'],
+     *         ['event' => 'done', 'data' => 'Complete'],
+     *     ]);
+     *
+     * Unnamed `data:` blocks swap per the request's hx-target/hx-swap;
+     * named `event:` blocks dispatch DOM events instead. The client
+     * replays from `Last-Event-ID` when an `id:` was seen.
+     *
+     * @param  iterable<string|array{data?: string|string[], event?: string, id?: string, retry?: int}>  $events
+     */
+    public function eventStream(iterable $events): StreamedResponse
+    {
+        $frames = [];
+
+        foreach ($events as $event) {
+            $frames[] = $this->sseFrame($event);
+        }
+
+        return new StreamedResponse(
+            function () use ($frames): void {
+                foreach ($frames as $frame) {
+                    echo $frame;
+                }
+
+                flush();
+            },
+            200,
+            [
+                'Content-Type' => 'text/event-stream',
+                'Cache-Control' => 'no-store',
+                'X-Accel-Buffering' => 'no',
+            ],
+        );
     }
 
     /**
@@ -272,6 +318,39 @@ class Htmx
     public function isPreloaded(?Request $request = null): bool
     {
         return strtolower((string) $this->header($request, self::HEADERS['isPreloaded'])) === 'true';
+    }
+
+    /**
+     * Format one SSE block, always terminated by a blank line.
+     *
+     * @param  string|array{data?: string|string[], event?: string, id?: string, retry?: int}  $event
+     */
+    private function sseFrame(string|array $event): string
+    {
+        if (is_string($event)) {
+            $event = ['data' => $event];
+        }
+
+        $lines = [];
+
+        if (isset($event['event']) && $event['event'] !== '') {
+            $lines[] = "event: {$event['event']}";
+        }
+
+        $data = $event['data'] ?? null;
+        $dataLines = is_array($data) ? $data : explode("\n", (string) $data);
+
+        foreach ($dataLines as $line) {
+            $lines[] = 'data: '.rtrim($line, "\r");
+        }
+
+        foreach (['id', 'retry'] as $field) {
+            if (isset($event[$field]) && $event[$field] !== '') {
+                $lines[] = "{$field}: {$event[$field]}";
+            }
+        }
+
+        return implode("\n", $lines)."\n\n";
     }
 
     private function header(?Request $request, string $name): ?string

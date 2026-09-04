@@ -59,6 +59,15 @@ return [
 
     'assets' => [
         'cdnFallback' => false,
+        // Slim core or max build. 'htmx.min.js' is the core plus the
+        // extensions listed below as separate scripts. 'htmax.js' is
+        // htmx bundled with the popular extensions (sse, ws, preload,
+        // browser-indicator, download, pending, targets, live, upsert,
+        // alpine-compat, history-cache) in one ~6x larger file — the
+        // scripts component then emits only htmax.js, never the
+        // standalone extension files alongside it. Unknown values fall
+        // back to the slim core.
+        'core' => 'htmx.min.js',
         'extensions' => [
             // Vendored script slug => extension registration name. htmx 4
             // approves extensions by registration name against a
