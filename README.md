@@ -135,7 +135,7 @@ response instead of changing the default:
 - Keep the failure visible to error listeners: return another `4xx` status
   with the error `partial` when client code distinguishes failure kinds.
 
-See `workbench/routes/web.php` (`/demo`) for a runnable fragment, `422`, and
+See `workbench/routes/web.php` (`/`) for a runnable fragment, `422`, and
 history-restore demo, and `/patterns` for a server-communication gallery —
 active search (`partial` + `HX-Push-Url`), delete in place (`HX-Trigger`
 toast), and active validation (`422` error `partial`).

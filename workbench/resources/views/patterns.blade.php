@@ -9,7 +9,7 @@
 {{-- Non-form requests (search, delete) carry the token via HX header. --}}
 <body hx-headers='{"X-CSRF-TOKEN": "{{ csrf_token() }}"}'>
 <h1>Server patterns</h1>
-<p><a href="/demo">Back to the fragment demo</a></p>
+<p><a href="/">Back to the fragment demo</a></p>
 
 <h2>Active search</h2>
 <p>Type to filter the list. The server returns the <code>results</code> fragment
@@ -58,7 +58,7 @@ header the <code>hx-prompt</code> extension sends.</p>
 <h2>Polling ticker</h2>
 <p>Polls every 5 seconds with the <code>hx-ptag</code> extension. The server
 compares the incoming tag with the current item count and answers
-<code>304</code> while nothing changed — open <code>/demo</code> in another
+<code>304</code> while nothing changed — open <code>/</code> in another
 tab, add an item, and watch this ticker swap on the next poll.</p>
 
 <div hx-get="/patterns/news" hx-trigger="every 5s">

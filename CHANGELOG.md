@@ -10,7 +10,7 @@
   `refresh`) with `target` / `swap` / `push` / `replace` aliases, plus
   chainable `Response` macros.
 - Single-view conditional `fragment` pattern with a `422` error `partial`
-  retargeted to a dedicated slot; workbench `/demo` covers fragment, `422`,
+  retargeted to a dedicated slot; workbench `/` covers fragment, `422`,
   and history-restore flows.
 - Strict v4 client config (`config/laravel-htmx.php`) with commented 2.x
   opt-ins; pinned 4.0.0 vendored assets with SRI hashes; `<x-htmx::scripts />`
