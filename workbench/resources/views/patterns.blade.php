@@ -103,5 +103,6 @@ tab, add an item, and watch this ticker swap on the next poll.</p>
         setTimeout(() => { toast.textContent = ''; }, 2000);
     });
 </script>
+@include('partials.inspector')
 </body>
 </html>

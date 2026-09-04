@@ -44,5 +44,6 @@
 <p>{{ $error }}</p>
 @endforeach
 @endfragment
+@include('partials.inspector')
 </body>
 </html>
