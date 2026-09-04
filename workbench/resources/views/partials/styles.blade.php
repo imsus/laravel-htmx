@@ -1,26 +1,149 @@
 <style>
-    /* Modern reset for Chrome (trimmed from normalize.css v8.0.1 — all
-       IE/Edge/Firefox/Safari workarounds removed; demo only, the package
-       ships no CSS). */
-    *, *::before, *::after { box-sizing: border-box; }
-    * { margin: 0; }
-    html {
+    /*!
+     * modern-normalize (Chrome-only build)
+     * Adapted from normalize.css v8.0.1 | MIT License | github.com/necolas/normalize.css
+     *
+     * Rewritten for latest Chrome using:
+     *   - @layer, to keep the reset low-priority in the cascade
+     *   - :where(), to keep every selector at 0 specificity (trivial to override)
+     *   - native CSS nesting
+     *   - logical properties instead of physical ones
+     *
+     * Dropped entirely (IE/Firefox/old-Safari-only bug fixes with no effect in Chrome):
+     *   - -moz-focus-inner / -moz-focusring        (Firefox only)
+     *   - fieldset's Firefox padding correction
+     *   - abbr[title] border-bottom reset          (Chrome ≤56 bug)
+     *   - a { background-color: transparent }      (IE10-only tap-highlight bug)
+     *   - button/select text-transform reset       (Edge/Firefox inheritance bug)
+     *   - [type="number"] spin-button height fix   (no-op in current Chrome)
+     *   - all vendor prefixes Chrome no longer needs (-webkit-text-size-adjust,
+     *     -webkit-appearance → unprefixed since Chrome 84+)
+     *
+     * Kept (still meaningful, since Chrome is WebKit/Blink-based):
+     *   - ::-webkit-search-decoration / ::-webkit-file-upload-button
+     */
+
+    @layer reset {
+      :where(html) {
         line-height: 1.15;
-        text-size-adjust: 100%;
-    }
-    body { min-height: 100svh; }
-    code, kbd, samp, pre { font-family: ui-monospace, monospace; }
-    sub, sup {
+        text-size-adjust: 100%; /* prefix no longer required in Chrome */
+      }
+
+      :where(body) {
+        margin: 0;
+      }
+
+      :where(main) {
+        display: block;
+      }
+
+      :where(h1) {
+        font-size: 2em;
+        margin-block: 0.67em;
+      }
+
+      :where(hr) {
+        box-sizing: content-box;
+        block-size: 0;
+        overflow: visible;
+      }
+
+      :where(pre, code, kbd, samp) {
+        font-family: ui-monospace, monospace;
+        font-size: 1em;
+      }
+
+      :where(abbr[title]) {
+        text-decoration: underline dotted;
+      }
+
+      :where(b, strong) {
+        font-weight: bolder;
+      }
+
+      :where(small) {
+        font-size: 80%;
+      }
+
+      :where(sub, sup) {
+        position: relative;
         font-size: 75%;
         line-height: 0;
-        position: relative;
         vertical-align: baseline;
+
+        &:where(sub) {
+          bottom: -0.25em;
+        }
+
+        &:where(sup) {
+          top: -0.5em;
+        }
+      }
+
+      :where(img) {
+        border-style: none;
+      }
+
+      :where(button, input, optgroup, select, textarea) {
+        font: inherit;
+        margin: 0;
+      }
+
+      :where(button, input) {
+        overflow: visible;
+      }
+
+      :where(button, [type="button"], [type="reset"], [type="submit"]) {
+        appearance: button; /* unprefixed in Chrome */
+      }
+
+      :where(legend) {
+        box-sizing: border-box;
+        display: table;
+        max-inline-size: 100%;
+        padding: 0;
+        color: inherit;
+        white-space: normal;
+      }
+
+      :where(progress) {
+        vertical-align: baseline;
+      }
+
+      :where(textarea) {
+        overflow: auto;
+      }
+
+      :where([type="checkbox"], [type="radio"]) {
+        box-sizing: border-box;
+        padding: 0;
+      }
+
+      :where([type="search"]) {
+        outline-offset: -2px;
+
+        &::-webkit-search-decoration {
+          -webkit-appearance: none; /* still Chrome/WebKit-specific, no unprefixed equivalent */
+        }
+      }
+
+      ::-webkit-file-upload-button {
+        font: inherit;
+        appearance: button;
+      }
+
+      :where(details) {
+        display: block;
+      }
+
+      :where(summary) {
+        display: list-item;
+      }
+
+      :where(template, [hidden]) {
+        display: none;
+      }
     }
-    sub { bottom: -0.25em; }
-    sup { top: -0.5em; }
-    img, video { max-width: 100%; height: auto; display: block; }
-    button, input, optgroup, select, textarea { font: inherit; }
-    [hidden] { display: none; }
 
     /* Demo theme. */
     body {
