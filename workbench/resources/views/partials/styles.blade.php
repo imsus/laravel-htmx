@@ -1,7 +1,28 @@
 <style>
-    /* Minimal modern reset (demo only — the package ships no CSS). */
+    /* Modern reset for Chrome (trimmed from normalize.css v8.0.1 — all
+       IE/Edge/Firefox/Safari workarounds removed; demo only, the package
+       ships no CSS). */
     *, *::before, *::after { box-sizing: border-box; }
     * { margin: 0; }
+    html {
+        line-height: 1.15;
+        text-size-adjust: 100%;
+    }
+    body { min-height: 100svh; }
+    code, kbd, samp, pre { font-family: ui-monospace, monospace; }
+    sub, sup {
+        font-size: 75%;
+        line-height: 0;
+        position: relative;
+        vertical-align: baseline;
+    }
+    sub { bottom: -0.25em; }
+    sup { top: -0.5em; }
+    img, video { max-width: 100%; height: auto; display: block; }
+    button, input, optgroup, select, textarea { font: inherit; }
+    [hidden] { display: none; }
+
+    /* Demo theme. */
     body {
         line-height: 1.5;
         font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -12,7 +33,6 @@
     }
     h1, h2, p, ul, form { margin-block: 0 1rem; }
     ul { padding-inline-start: 1.25rem; }
-    input, button { font: inherit; }
     input {
         padding: .4rem .6rem;
         border: 1px solid #b9c4d6;
