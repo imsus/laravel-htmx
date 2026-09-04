@@ -1,4 +1,4 @@
-# Laravel Htmx
+# Laravel HTMX
 
 Laravel server adapter for htmx 4: detects htmx requests and emits the response headers, fragments, and client config htmx expects.
 

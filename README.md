@@ -1,6 +1,7 @@
-<div align="center">
-    <h1>Laravel Htmx</h1>
-</div>
+<picture>
+    <source media="(prefers-color-scheme: dark)" srcset="art/banner-dark.svg">
+    <img alt="Laravel HTMX — server adapter for htmx 4" src="art/banner-light.svg" width="100%">
+</picture>
 
 <p align="center">
     <a href="https://packagist.org/packages/imsus/laravel-htmx"><img src="https://img.shields.io/packagist/v/imsus/laravel-htmx.svg?style=flat-square" alt="Packagist"></a>
@@ -229,7 +230,7 @@ Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed re
 
 ## Contributing
 
-Thank you for considering contributing to Laravel Htmx! Please review our [contributing guide](.github/CONTRIBUTING.md) to get started.
+Thank you for considering contributing to Laravel HTMX! Please review our [contributing guide](.github/CONTRIBUTING.md) to get started.
 
 ## Security Vulnerabilities
 
@@ -242,4 +243,4 @@ Please review [our security policy](.github/SECURITY.md) on how to report securi
 
 ## License
 
-Laravel Htmx is open-sourced software licensed under the [MIT license](LICENSE.md).
+Laravel HTMX is open-sourced software licensed under the [MIT license](LICENSE.md).

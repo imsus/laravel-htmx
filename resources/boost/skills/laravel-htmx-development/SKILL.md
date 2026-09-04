@@ -1,7 +1,7 @@
 ---
 name: laravel-htmx-development
 description: >
-  Configure and apply the Laravel Htmx package in Laravel applications:
+  Configure and apply the Laravel HTMX package in Laravel applications:
   partial-vs-full-page branching, response headers, the 422 error pattern,
   script includes, and the htmx:upgrade-check migration command.
 license: MIT
@@ -9,7 +9,7 @@ metadata:
   author: Imam Susanto
 ---
 
-# Laravel Htmx
+# Laravel HTMX
 
 Use this skill when a Laravel application needs to integrate the `imsus/laravel-htmx` package (htmx 4 server adapter).
 
