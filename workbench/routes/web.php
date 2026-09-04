@@ -7,7 +7,10 @@ use Illuminate\Support\ViewErrorBag;
 use Illuminate\View\View;
 
 // The workbench app boots from the default skeleton, so the demo views load
-// by file path instead of by name.
+// by file path instead of by name. Registering the directory as well so the
+// views can share partials via @include.
+view()->addLocation(__DIR__.'/../resources/views');
+
 $demoView = fn (array $data): View => view()->file(__DIR__.'/../resources/views/demo.blade.php', $data);
 
 // Fragment + 422 + history-restore demo (see resources/views/demo.blade.php).

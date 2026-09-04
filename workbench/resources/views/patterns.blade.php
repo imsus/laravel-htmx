@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>laravel-htmx patterns</title>
     <x-htmx::scripts />
+    @include('partials.styles')
 </head>
 {{-- Non-form requests (search, delete) carry the token via HX header. --}}
 <body hx-headers='{"X-CSRF-TOKEN": "{{ csrf_token() }}"}'>
