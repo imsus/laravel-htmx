@@ -44,6 +44,13 @@ Route::post('/items', function (Request $request) use ($demoView) {
         ->fragmentIf($request->isPartial(), 'rows');
 })->middleware(DemoDelay::class);
 
+Route::delete('/items', function (Request $request) use ($demoView) {
+    session(['items' => []]);
+
+    return $demoView(['items' => [], 'errors' => new ViewErrorBag])
+        ->fragmentIf($request->isPartial(), 'rows');
+})->middleware(DemoDelay::class);
+
 // Pattern gallery: server communication through the package API
 // (see resources/views/patterns.blade.php).
 $patternsView = fn (array $data): View => view()->file(__DIR__.'/../resources/views/patterns.blade.php', $data);

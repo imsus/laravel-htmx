@@ -20,9 +20,11 @@
 
 @fragment('rows')
 <ul id="rows">
-    @foreach ($items as $item)
+    @forelse ($items as $item)
         <li>{{ $item }}</li>
-    @endforeach
+    @empty
+        <li>No items yet — add one below.</li>
+    @endforelse
 </ul>
 @endfragment
 
@@ -34,6 +36,16 @@
     <button type="submit">Add</button>
     <span id="adding" class="htmx-indicator" role="status">Adding…</span>
 </form>
+
+<h2>Danger zone</h2>
+
+<button
+    class="danger"
+    hx-delete="/items"
+    hx-target="#rows"
+    hx-swap="outerHTML"
+    hx-confirm="Delete all items?"
+>Delete all</button>
 
 <p>Submit a short name to see the <code>422</code> error partial swap into the slot below — the list is untouched.</p>
 

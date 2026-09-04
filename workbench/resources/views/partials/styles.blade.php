@@ -27,6 +27,8 @@
         cursor: pointer;
     }
     button:hover { background: #1e46a0; }
+    button.danger { background: #c0392b; border-color: #c0392b; }
+    button.danger:hover { background: #96281b; }
     a { color: #2b5fce; }
 
     /* htmx request states (class reference for the demo pages). */
