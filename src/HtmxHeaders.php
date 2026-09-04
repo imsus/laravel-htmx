@@ -139,6 +139,17 @@ class HtmxHeaders
     }
 
     /**
+     * Poll tag for the hx-ptag extension: stored on the element and sent
+     * back on the next request so the server can answer 304 when current.
+     */
+    public function ptag(string $tag): static
+    {
+        $this->headers['HX-PTag'] = $tag;
+
+        return $this;
+    }
+
+    /**
      * @return array<string, string>
      */
     public function toArray(): array

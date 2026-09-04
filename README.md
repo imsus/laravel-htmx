@@ -184,8 +184,33 @@ and the `422` error-`partial` pattern applies unchanged:
 The server reads `$request->file('avatar')` normally; validation failures
 return the `422` error `partial` into `#form-errors` like any other form.
 
-### Upgrading from 2.x
+### Extension server support
 
+Three extensions need the server to speak their wire contract, so the
+package covers them (see `docs/extensions-server-support.md` for the full
+17-extension survey):
+
+```php
+// hx-ptag: skip the swap with 304 while the poll tag is current.
+if ($request->ptag() === $current) {
+    return response('', 304);
+}
+
+return response($html)->ptag($current);
+
+// hx-prompt: read the pre-request prompt answer.
+$reason = $request->prompt();
+
+// hx-preload: detect speculative preload GETs.
+if ($request->isPreloaded()) {
+    // serve cheaply; the response may never be consumed.
+}
+```
+
+`hx-ptag.js` ships vendored with an SRI hash and allowlist entry, emitted by
+`<x-htmx::scripts />` like the other extensions.
+
+### Upgrading from 2.x
 Scan Blade markup — including templates — before runtime:
 
 ```bash

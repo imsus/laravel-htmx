@@ -117,8 +117,17 @@ a real 3xx); another `4xx` when client code distinguishes failure kinds.
   `$request->file()` normally and validation failures use the same `422`
   error-`partial` pattern.
 
-### 7. Migrate a 2.x app before runtime
+### 7. Use the server-backed extensions
 
+- Polling without wasted swaps (`hx-ptag`): compare `$request->ptag()` with
+  the current version, return `response('', 304)` when unchanged, else stamp
+  the response with `->ptag($current)` (builder or `Response` macro).
+- Prompt answers (`hx-prompt`): read `$request->prompt()`.
+- Speculative preloads (`hx-preload`): check `$request->isPreloaded()` and
+  serve cheaply. All three read the same on every surface: request macro,
+  `htmx()` helper, `Htmx` facade.
+
+### 8. Migrate a 2.x app before runtime
 ```bash
 php artisan htmx:upgrade-check --path=resources/views --ext=.blade.php
 ```

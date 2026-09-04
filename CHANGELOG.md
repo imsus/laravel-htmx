@@ -17,6 +17,9 @@
   component with config meta tag, extension allowlist, and CDN fallback;
   one-step `htmx:install`.
 - `htmx:upgrade-check` markup scanner, bundled agent skill, and release docs.
+- Extension server support: `ptag` / `prompt` / `isPreloaded` detection plus
+  the `HX-PTag` response header, vendored `hx-ptag.js`, and a `/patterns`
+  polling ticker (see `docs/extensions-server-support.md`).
 
 
 ## [v0.1.0](https://github.com/imsus/laravel-htmx/compare/...v0.1.0) - 202x-xx-xx

@@ -59,13 +59,23 @@ return [
     'assets' => [
         'cdnFallback' => false,
         'cdnBase' => 'https://cdn.jsdelivr.net/npm/htmx.org@4.0.0/',
-        'extensions' => ['htmax', 'hx-history-cache', 'hx-prompt'],
+        'extensions' => [
+            // Vendored script slug => extension registration name. htmx 4
+            // approves extensions by registration name against a
+            // comma-separated allowlist (see scripts component), and names
+            // are inconsistent upstream ('ptag' vs 'hx-prompt'), so map them
+            // explicitly. htmax.js is the max core build, not an extension.
+            'hx-history-cache' => 'history-cache',
+            'hx-prompt' => 'hx-prompt',
+            'hx-ptag' => 'ptag',
+        ],
         'integrity' => [
             'htmx.min.js' => 'sha384-BvJpBiO8Kh31EqtJe5DRIeWrHWnCGkwytKs9NKFi86Hhw96dEqdEMzZDeK9iEGTc',
             'htmx.esm.js' => 'sha384-fh3WoeSX2U60P2sV0M8Y6xvhTB5cpTb+AAF28P71BzGUZ/KI7QYrzKfwTFD/OCr6',
             'htmax.js' => 'sha384-wrTFbAj755gAdIPPR9n4aAVMkLWkzxjr1Zj+8D4kgr2App4h9doO6SXBH9wpivij',
             'hx-history-cache.js' => 'sha384-uAKHk6uA+kfE8F1USwRsZc28yieFgkLRfa0m79Gm7svsqxdy9voYQuCcwiCf3zVR',
             'hx-prompt.js' => 'sha384-AIEfbt9mlav7oV3t1s5OXJO0iBtizXGCWEFfhVtdrIfhGEbW4ni0JgbIRiDHrcRO',
+            'hx-ptag.js' => 'sha384-R20vL2ppRMMKzN1SVZdVpoeW1yH54eSH8rX3jz9NqpuWNqzwR5ngAqhCcKnK/b1s',
         ],
     ],
 

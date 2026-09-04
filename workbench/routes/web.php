@@ -51,9 +51,12 @@ Route::delete('/patterns/items/{name}', function (Request $request, string $name
         fn (string $item): bool => $item !== $name,
     ))]);
 
+    $reason = $request->prompt();
+    $message = $reason !== null && $reason !== '' ? "{$name} deleted ({$reason})" : "{$name} deleted";
+
     return htmx()
         ->headers()
-        ->trigger(['itemDeleted' => ['message' => "{$name} deleted"]])
+        ->trigger(['itemDeleted' => ['message' => $message]])
         ->applyTo(response('', 200));
 });
 
@@ -73,6 +76,19 @@ Route::post('/patterns/validate', function (Request $request) use ($patternsView
     return $headers->applyTo(response(
         $patternsView(['items' => $patternItems(), 'errors' => new ViewErrorBag, 'q' => ''])
             ->fragmentIf(true, 'v-errors'),
+    ));
+});
+
+Route::get('/patterns/news', function (Request $request) use ($patternsView, $patternItems) {
+    $current = 'v'.count($patternItems());
+
+    if ($request->ptag() === $current) {
+        return response('', 304);
+    }
+
+    return htmx()->headers()->ptag($current)->applyTo(response(
+        $patternsView(['items' => $patternItems(), 'errors' => new ViewErrorBag, 'q' => ''])
+            ->fragmentIf(true, 'news'),
     ));
 });
 // The workbench app boots from the default skeleton, so the demo view loads

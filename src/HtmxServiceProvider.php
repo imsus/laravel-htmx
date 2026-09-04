@@ -88,6 +88,18 @@ class HtmxServiceProvider extends ServiceProvider
         Request::macro('requestType', function (): ?string {
             return app(HtmxManager::class)->requestType($this);
         });
+
+        Request::macro('ptag', function (): ?string {
+            return app(HtmxManager::class)->ptag($this);
+        });
+
+        Request::macro('prompt', function (): ?string {
+            return app(HtmxManager::class)->prompt($this);
+        });
+
+        Request::macro('isPreloaded', function (): bool {
+            return app(HtmxManager::class)->isPreloaded($this);
+        });
     }
 
     /**
@@ -169,6 +181,12 @@ class HtmxServiceProvider extends ServiceProvider
 
         Response::macro('refresh', function (): Response {
             (new HtmxHeaders)->refresh()->applyTo($this);
+
+            return $this;
+        });
+
+        Response::macro('ptag', function (string $tag): Response {
+            (new HtmxHeaders)->ptag($tag)->applyTo($this);
 
             return $this;
         });

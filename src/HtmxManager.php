@@ -78,6 +78,31 @@ class HtmxManager
         return $value === null ? null : strtolower($value);
     }
 
+    /**
+     * Stored poll tag of the requesting element (hx-ptag extension).
+     */
+    public function ptag(?Request $request = null): ?string
+    {
+        return $this->header($request, 'HX-PTag');
+    }
+
+    /**
+     * Answer to the pre-request prompt (hx-prompt extension).
+     */
+    public function prompt(?Request $request = null): ?string
+    {
+        return $this->header($request, 'HX-Prompt');
+    }
+
+    /**
+     * Speculative preload request (hx-preload extension) — safe to serve
+     * cheaply or skip side effects for, since it may never be consumed.
+     */
+    public function isPreloaded(?Request $request = null): bool
+    {
+        return strtolower((string) $this->header($request, 'HX-Preloaded')) === 'true';
+    }
+
     private function header(?Request $request, string $name): ?string
     {
         $value = $this->request($request)->headers->get($name);

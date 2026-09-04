@@ -32,6 +32,9 @@ This repository is a Laravel package. Keep the package focused, idiomatic, and e
 - Pest tests: `composer test:unit`
 - Workbench build: `composer build`
 - Workbench server: `composer serve`
+- After changing `config/` or `public/`, force-republish into the skeleton:
+  `php vendor/bin/testbench vendor:publish --tag=laravel-htmx-assets --force`
+  (same for `-config` / `-views`), or the dev server keeps serving stale files.
 
 ### Local Skills
 

@@ -36,13 +36,16 @@ for partial requests and pushes the query into the URL from the response.</p>
 @endfragment
 
 <h2>Delete in place</h2>
-<p>Each row deletes itself; the server fires a toast event with the response.</p>
+<p>Each row asks for a reason, then deletes itself; the server fires a toast
+event with the response. The reason arrives as the <code>HX-Prompt</code>
+header the <code>hx-prompt</code> extension sends.</p>
 
 <ul id="records">
     @foreach ($items as $item)
         <li>{{ $item }}
             <button
                 hx-delete="/patterns/items/{{ urlencode($item) }}"
+                hx-prompt="Reason for deleting {{ $item }}?"
                 hx-target="closest li"
                 hx-swap="outerHTML swap:200ms"
             >Delete</button>
@@ -51,6 +54,18 @@ for partial requests and pushes the query into the URL from the response.</p>
 </ul>
 
 <div id="toast" role="status"></div>
+
+<h2>Polling ticker</h2>
+<p>Polls every 5 seconds with the <code>hx-ptag</code> extension. The server
+compares the incoming tag with the current item count and answers
+<code>304</code> while nothing changed — open <code>/demo</code> in another
+tab, add an item, and watch this ticker swap on the next poll.</p>
+
+<div hx-get="/patterns/news" hx-trigger="every 5s">
+@fragment('news')
+<p id="news">Tracking {{ count($items) }} items.</p>
+@endfragment
+</div>
 
 <h2>Active validation</h2>
 <p>Each keystroke validates on the server into the same error slot the

@@ -4,15 +4,6 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\Blade;
 
-function unpublish(array $files): void
-{
-    foreach ($files as $file) {
-        if (is_file($file)) {
-            unlink($file);
-        }
-    }
-}
-
 it('ships strict v4 client defaults', function () {
     expect(config('laravel-htmx.version'))->toBe('4.0.0')
         ->and(config('laravel-htmx.client.implicitInheritance'))->toBeFalse()
@@ -64,9 +55,18 @@ it('renders the scripts component with versioned scripts and config meta', funct
 it('emits the extension allowlist from the scripts component', function () {
     $html = Blade::render('<x-htmx::scripts />');
 
-    foreach (config('laravel-htmx.assets.extensions') as $extension) {
-        expect($html)->toContain($extension);
+    /** @var array<string, string> $extensions */
+    $extensions = config('laravel-htmx.assets.extensions');
+
+    // Script tags load by vendored slug; the allowlist approves by
+    // registration name as one comma-separated string (never JSON).
+    foreach (array_keys($extensions) as $slug) {
+        expect($html)->toContain("/vendor/laravel-htmx/{$slug}.js");
     }
+
+    expect($html)
+        ->toContain('history-cache,hx-prompt,ptag')
+        ->not->toContain('&quot;extensions&quot;:[');
 });
 
 it('switches to pinned CDN urls when the fallback toggle is on', function () {
@@ -89,8 +89,4 @@ it('installs config, views, and assets in one step', function () {
     foreach ($published as $file) {
         expect(is_file($file))->toBeTrue("htmx:install did not publish {$file}");
     }
-
-    // Keep the suite hermetic: a published host config would otherwise
-    // override package defaults for every later test in this skeleton.
-    unpublish($published);
 });

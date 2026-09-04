@@ -63,4 +63,19 @@ class Htmx
     {
         return $this->manager->requestType($request);
     }
+
+    public function ptag(?Request $request = null): ?string
+    {
+        return $this->manager->ptag($request);
+    }
+
+    public function prompt(?Request $request = null): ?string
+    {
+        return $this->manager->prompt($request);
+    }
+
+    public function isPreloaded(?Request $request = null): bool
+    {
+        return $this->manager->isPreloaded($request);
+    }
 }
