@@ -1,147 +1,116 @@
 <style>
     /*!
-     * modern-normalize (Chrome-only build)
-     * Adapted from normalize.css v8.0.1 | MIT License | github.com/necolas/normalize.css
-     *
-     * Rewritten for latest Chrome using:
-     *   - @layer, to keep the reset low-priority in the cascade
-     *   - :where(), to keep every selector at 0 specificity (trivial to override)
-     *   - native CSS nesting
-     *   - logical properties instead of physical ones
-     *
-     * Dropped entirely (IE/Firefox/old-Safari-only bug fixes with no effect in Chrome):
-     *   - -moz-focus-inner / -moz-focusring        (Firefox only)
-     *   - fieldset's Firefox padding correction
-     *   - abbr[title] border-bottom reset          (Chrome ≤56 bug)
-     *   - a { background-color: transparent }      (IE10-only tap-highlight bug)
-     *   - button/select text-transform reset       (Edge/Firefox inheritance bug)
-     *   - [type="number"] spin-button height fix   (no-op in current Chrome)
-     *   - all vendor prefixes Chrome no longer needs (-webkit-text-size-adjust,
-     *     -webkit-appearance → unprefixed since Chrome 84+)
-     *
-     * Kept (still meaningful, since Chrome is WebKit/Blink-based):
-     *   - ::-webkit-search-decoration / ::-webkit-file-upload-button
-     */
+      chrome-only-reset.css
+      No cross-browser normalization. Targets latest stable Chrome/Chromium only.
 
-    @layer reset {
-      :where(html) {
-        line-height: 1.15;
-        text-size-adjust: 100%; /* prefix no longer required in Chrome */
-      }
+      With a single rendering engine there's nothing left to "normalize" —
+      every remaining rule here is either (a) a Blink-specific default this
+      project chooses to override, or (b) a plain opinionated baseline, not
+      a cross-browser bug fix. No -moz-, no legacy -webkit- shims that Chrome
+      itself doesn't need.
+    */
 
-      :where(body) {
-        margin: 0;
-      }
+    /* Box sizing & baseline
+       ========================================================================== */
 
-      :where(main) {
-        display: block;
-      }
+    :where(*, *::before, *::after) {
+      box-sizing: border-box;
+    }
 
-      :where(h1) {
-        font-size: 2em;
-        margin-block: 0.67em;
-      }
+    html {
+      line-height: 1.15;
+      color-scheme: light dark;
+      tab-size: 4;
+      -webkit-text-size-adjust: 100%; /* Blink's own font-boosting on narrow/Android viewports — not a Safari patch */
+    }
 
-      :where(hr) {
-        box-sizing: content-box;
-        block-size: 0;
-        overflow: visible;
-      }
+    body {
+      margin: 0;
+      min-height: 100vh;
+    }
 
-      :where(pre, code, kbd, samp) {
-        font-family: ui-monospace, monospace;
-        font-size: 1em;
-      }
+    /* Typography
+       ========================================================================== */
 
-      :where(abbr[title]) {
-        text-decoration: underline dotted;
-      }
+    a {
+      text-decoration-skip-ink: auto;
+    }
 
-      :where(b, strong) {
-        font-weight: bolder;
-      }
+    code,
+    kbd,
+    samp,
+    pre {
+      font-family: ui-monospace, Menlo, Consolas, monospace;
+    }
 
-      :where(small) {
-        font-size: 80%;
-      }
+    sub,
+    sup {
+      font-size: 75%;
+      line-height: 0;
+      position: relative;
+      vertical-align: baseline;
+    }
 
-      :where(sub, sup) {
-        position: relative;
-        font-size: 75%;
-        line-height: 0;
-        vertical-align: baseline;
+    sub {
+      bottom: -0.25em;
+    }
 
-        &:where(sub) {
-          bottom: -0.25em;
-        }
+    sup {
+      top: -0.5em;
+    }
 
-        &:where(sup) {
-          top: -0.5em;
-        }
-      }
+    /* Embedded content
+       ========================================================================== */
 
-      :where(img) {
-        border-style: none;
-      }
+    :where(img, picture, video, canvas, svg) {
+      display: block;
+      max-width: 100%;
+    }
 
-      :where(button, input, optgroup, select, textarea) {
-        font: inherit;
-        margin: 0;
-      }
+    /* Forms
+       ========================================================================== */
 
-      :where(button, input) {
-        overflow: visible;
-      }
+    button,
+    input,
+    optgroup,
+    select,
+    textarea {
+      font: inherit;
+      margin: 0;
+    }
 
-      :where(button, [type="button"], [type="reset"], [type="submit"]) {
-        appearance: button; /* unprefixed in Chrome */
-      }
+    /* Chrome ships unprefixed `appearance` (Baseline since March 2022) —
+       no -webkit- needed here even though this is Blink. */
 
-      :where(legend) {
-        box-sizing: border-box;
-        display: table;
-        max-inline-size: 100%;
-        padding: 0;
-        color: inherit;
-        white-space: normal;
-      }
+    [type="search"] {
+      appearance: textfield; /* Chrome/macOS still renders a native rounded search field otherwise */
+    }
 
-      :where(progress) {
-        vertical-align: baseline;
-      }
+    /* Standard pseudo-element; Chrome's own ::-webkit-file-upload-button
+       is the deprecated form of this now. */
 
-      :where(textarea) {
-        overflow: auto;
-      }
+    ::file-selector-button {
+      appearance: button;
+      font: inherit;
+    }
 
-      :where([type="checkbox"], [type="radio"]) {
-        box-sizing: border-box;
-        padding: 0;
-      }
+    /* Interaction
+       ========================================================================== */
 
-      :where([type="search"]) {
-        outline-offset: -2px;
+    :focus-visible {
+      outline: 2px solid Highlight;
+      outline-offset: 2px;
+    }
 
-        &::-webkit-search-decoration {
-          -webkit-appearance: none; /* still Chrome/WebKit-specific, no unprefixed equivalent */
-        }
-      }
+    /* Accessibility
+       ========================================================================== */
 
-      ::-webkit-file-upload-button {
-        font: inherit;
-        appearance: button;
-      }
-
-      :where(details) {
-        display: block;
-      }
-
-      :where(summary) {
-        display: list-item;
-      }
-
-      :where(template, [hidden]) {
-        display: none;
+    @media (prefers-reduced-motion: reduce) {
+      :where(*, *::before, *::after) {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
       }
     }
 
