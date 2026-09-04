@@ -1,0 +1,35 @@
+name: Feature Request
+description: Suggest an addition to the htmx 4 server contract.
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting an improvement. Keep it inside the package scope:
+        detection, partials, response headers, error swapping, client config,
+        assets, and upgrade tooling — no package routes, migrations, or translations.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What htmx 4 server behavior can you not express with the current API?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: Which headers, macros, config keys, or commands should the package gain, and what wire contract do they speak?
+    validations:
+      required: true
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: Links to htmx docs, prior art, or related issues.
+    validations:
+      required: false

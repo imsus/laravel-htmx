@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: htmx 4 documentation
+    url: https://four.htmx.org/docs
+    about: Upstream docs for the client-side attributes, events, and extensions.
