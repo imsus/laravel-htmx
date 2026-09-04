@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ViewErrorBag;
 use Illuminate\View\View;
+use Workbench\App\Http\Middleware\DemoDelay;
 
 // The workbench app boots from the default skeleton, so the demo views load
 // by file path instead of by name. Registering the directory as well so the
@@ -19,7 +20,7 @@ Route::get('/', function (Request $request) use ($demoView) {
         'items' => session('items', ['Apples', 'Oranges']),
         'errors' => new ViewErrorBag,
     ])->fragmentIf($request->isPartial(), 'rows');
-});
+})->middleware(DemoDelay::class);
 
 Route::post('/items', function (Request $request) use ($demoView) {
     $validator = Validator::make($request->all(), ['name' => 'required|min:3']);
@@ -41,7 +42,7 @@ Route::post('/items', function (Request $request) use ($demoView) {
 
     return $demoView(['items' => $items, 'errors' => new ViewErrorBag])
         ->fragmentIf($request->isPartial(), 'rows');
-});
+})->middleware(DemoDelay::class);
 
 // Pattern gallery: server communication through the package API
 // (see resources/views/patterns.blade.php).
@@ -55,7 +56,7 @@ Route::get('/patterns', function (Request $request) use ($patternsView, $pattern
         'errors' => new ViewErrorBag,
         'q' => (string) $request->query('q', ''),
     ]);
-});
+})->middleware(DemoDelay::class);
 
 Route::get('/patterns/search', function (Request $request) use ($patternsView, $patternItems) {
     $q = (string) $request->query('q', '');
@@ -76,7 +77,7 @@ Route::get('/patterns/search', function (Request $request) use ($patternsView, $
     }
 
     return $response;
-});
+})->middleware(DemoDelay::class);
 
 Route::delete('/patterns/items/{name}', function (Request $request, string $name) use ($patternItems) {
     session(['items' => array_values(array_filter(
@@ -91,7 +92,7 @@ Route::delete('/patterns/items/{name}', function (Request $request, string $name
         ->headers()
         ->trigger(['itemDeleted' => ['message' => $message]])
         ->applyTo(response('', 200));
-});
+})->middleware(DemoDelay::class);
 
 Route::post('/patterns/validate', function (Request $request) use ($patternsView, $patternItems) {
     $validator = Validator::make($request->all(), ['name' => 'required|min:3']);
@@ -110,7 +111,7 @@ Route::post('/patterns/validate', function (Request $request) use ($patternsView
         $patternsView(['items' => $patternItems(), 'errors' => new ViewErrorBag, 'q' => ''])
             ->fragmentIf(true, 'v-errors'),
     ));
-});
+})->middleware(DemoDelay::class);
 
 Route::get('/patterns/news', function (Request $request) use ($patternsView, $patternItems) {
     $current = 'v'.count($patternItems());
@@ -123,4 +124,4 @@ Route::get('/patterns/news', function (Request $request) use ($patternsView, $pa
         $patternsView(['items' => $patternItems(), 'errors' => new ViewErrorBag, 'q' => ''])
             ->fragmentIf(true, 'news'),
     ));
-});
+})->middleware(DemoDelay::class);
