@@ -34,6 +34,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static \Imsus\LaravelHtmx\HtmxHeaders headers()
  * @method static \Symfony\Component\HttpFoundation\StreamedResponse eventStream(iterable<string|array{data?: string|string[], event?: string, id?: string, retry?: int}> $events)
  * @method static \Illuminate\Http\Response errorPartial(\Illuminate\View\View $view, string $fragment, string $slot, int $status = 422)
+ * @method static \Illuminate\Http\Response oob(\Illuminate\View\View $view, list<string> $names)
  * @method static \Illuminate\Http\Response poll(\Illuminate\View\View $view, string $fragment, string $tag, \Illuminate\Http\Request|null $request = null)
  * @method static \Illuminate\Http\Response stopPolling()
  */

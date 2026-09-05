@@ -64,8 +64,14 @@ Route::get('/items', fn (Request $request) =>
 `$request->isPartial()` is true only for fragment requests — history-restore
 and boosted navigation always get the full page. Detection surfaces:
 `$request->isHtmx()`, `isPartial()`, `isBoosted()`, `isHistoryRestore()`,
-`source()` / `target()` (`tag#id` format), and `requestType()`. The same API
+`source()` / `target()` (`tag#id` format), `triggerId()` / `triggerName()`
+(the firing element's id and name), and `requestType()`. The same API
 is reachable via `htmx()` and the `Htmx` facade.
+
+One response can update several elements: mark each fragment root with
+`hx-swap-oob` in your markup, then compose them server-side in order —
+`htmx()->oob($view, ['todo', 'todo-count'])`. The package renders and
+concatenates; targeting stays in the markup where it belongs.
 
 ### 4. Drive swaps from the response
 
@@ -125,7 +131,8 @@ a real 3xx); another `4xx` when client code distinguishes failure kinds.
   `htmx()->poll($view, 'news', $current)` — a matching incoming tag
   returns an empty `304`, otherwise the Fragment renders stamped with
   the new tag. The `ptag($tag)` builder and `Response` macro remain for
-  hand-assembled responses.
+  hand-assembled responses. When the poll is finished, quit it with
+  `htmx()->stopPolling()` — an empty `286` htmx honors by retiring the poller.
 - Prompt answers (`hx-prompt`): read `$request->prompt()`.
 - Speculative preloads (`hx-preload`): check `$request->isPreloaded()` and
   serve cheaply.

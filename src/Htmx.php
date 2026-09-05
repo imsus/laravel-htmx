@@ -119,6 +119,30 @@ class Htmx
     }
 
     /**
+     * Answer with several fragments at once, each bound for its own element.
+     *
+     * One request, many swaps: every named Fragment renders from the same
+     * view and the bodies concatenate in the order you list them. The
+     * markup owns the targeting — each fragment root carries hx-swap-oob,
+     * so htmx routes every piece to its element:
+     *
+     *     return htmx()->oob(
+     *         view('todos', ['todo' => $todo, 'left' => $left]),
+     *         ['todo', 'todo-count'],
+     *     );
+     *
+     * An empty list answers an empty 200 — polling loops compose these
+     * calls without special-casing. Unknown names fail exactly the way
+     * core fragment rendering fails: loudly, not silently skipped.
+     *
+     * @param  list<string>  $names
+     */
+    public function oob(View $view, array $names): Response
+    {
+        return response($view->fragments($names));
+    }
+
+    /**
      * Answer a poll with either fresh markup or a quiet 304.
      *
      * The whole hx-ptag loop in one call: when the element's stored tag
