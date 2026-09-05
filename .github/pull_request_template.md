@@ -1,5 +1,7 @@
 ## What does this change?
 
+<!-- Title the PR conventionally — feat:, fix:, docs:, chore:, refactor:, test: — it becomes the squash-merge commit on main. -->
+
 ## Why is it needed?
 
 ## How was it verified?

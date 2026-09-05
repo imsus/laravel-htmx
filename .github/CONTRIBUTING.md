@@ -18,6 +18,14 @@ For significant changes, please open an issue first so we can discuss the approa
 - You may need to [rebase](https://git-scm.com/book/en/v2/Git-Branching-Rebasing) to avoid merge conflicts.
 - Please remember that we follow [SemVer](http://semver.org/).
 
+## Commits & branches
+
+Commit messages and branch names follow [Conventional Commits](https://www.conventionalcommits.org/):
+
+- Types: `feat:`, `fix:`, `docs:`, `chore:`, `refactor:`, `test:` — append `!` (or a `BREAKING CHANGE:` footer) when the package contract breaks.
+- Branches carry the same prefix: `feat/<slug>`, `fix/<slug>`, `docs/<slug>`, `chore/<slug>`.
+- PRs squash-merge under one conventional title, so `main` stays scannable. WIP commits inside the branch can be freeform.
+
 ## Setup
 
 Clone your fork, then install the dev dependencies:
