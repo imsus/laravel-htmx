@@ -11,9 +11,9 @@
     <a href="https://packagist.org/packages/imsus/laravel-htmx"><img src="https://img.shields.io/packagist/dt/imsus/laravel-htmx.svg?style=flat-square" alt="Total Downloads"></a>
 </p>
 
-Build dynamic interfaces with the simplicity of Blade. Laravel HTMX lets your server speak fluent htmx 4 — fragments, swaps, redirects — without reaching for a JavaScript framework.
+Build dynamic interfaces with the simplicity of Blade. Laravel HTMX lets your server speak fluent htmx 4 — fragments, swaps, redirects — without a JavaScript framework.
 
-You're going to love how little changes. Your Blade views stay whole. Your controllers gain one expressive branch. htmx handles the rest.
+Your Blade views stay whole. Your controllers gain one branch. htmx handles the rest.
 
 ## Installation
 
@@ -74,14 +74,20 @@ That's it. htmx requests receive just the `rows` fragment. Everyone else — fir
 Three spellings, same answer. Pick the one that reads best where you are:
 
 ```php
-$request->isPartial(); // In controllers — my favorite.
+$request->isPartial(); // In controllers.
 htmx()->isPartial();   // Anywhere via the helper.
 Htmx::isPartial();     // Via the facade in services and jobs.
 ```
 
-## Handling validation beautifully
+One response can also update several elements at once. Mark each fragment root with `hx-swap-oob` in your markup, then compose them server-side:
 
-htmx 4 swaps error responses right into the page, so validation failures feel effortless. Return a `422` with your error fragment, retargeted at a little slot that always lives in the page:
+```php
+return htmx()->oob(view('todos', [...]), ['todo', 'todo-count']);
+```
+
+## Validation
+
+htmx 4 swaps error responses right into the page. Return a `422` with your error fragment, retargeted at a slot that always lives in the page:
 
 ```blade
 <div id="form-errors"></div>
@@ -153,19 +159,23 @@ Want every popular extension without managing script tags? Flip `assets.core` to
 ],
 ```
 
-## Little things you'll appreciate
+## Boosted Navigation
 
-**Boosted navigation just works.** Add `hx-boost` and links behave like full visits — `isPartial()` returns false, so boosted requests always get the full page. Never a layout-less fragment.
+Add `hx-boost` and links behave like full visits — `isPartial()` returns false, so boosted requests always get the full page. Never a layout-less fragment.
 
-**Events are modern.** Listen for `htmx:*` — the old `htmx:xhr:*` and `htmx:abort` days are gone now that v4 rides on `fetch()`. If your `from:` or `target:` selectors contain spaces or commas, wrap them in single quotes.
+## Events
 
-**Deletes stay tidy.** Scope a delete to its row's form:
+Listen for `htmx:*` — the old `htmx:xhr:*` and `htmx:abort` days are gone now that v4 rides on `fetch()`. If your `from:` or `target:` selectors contain spaces or commas, wrap them in single quotes.
+
+## Deletes and Uploads
+
+Scope a delete to its row's form:
 
 ```html
 <button hx-delete="/items/1" hx-include="closest form">Delete</button>
 ```
 
-**Uploads feel normal.** Declare the encoding, target your error slot, and the server reads files like always:
+Uploads work the same way. Declare the encoding, target your error slot, and the server reads files like always:
 
 ```html
 <form hx-post="/avatar" hx-encoding="multipart/form-data" hx-target="#form-errors" hx-swap="innerHTML">
@@ -180,9 +190,9 @@ $request->file('avatar'); // Just like any other upload.
 
 Validation failures return the same `422` error partial into `#form-errors`.
 
-## A few friendly extensions
+## Extensions
 
-Five extensions ask a little of your server, so the package speaks their language (the full 17-extension survey lives in `docs/extensions-server-support.md`):
+Five extensions need something from your server, so the package speaks their language (the full 17-extension survey lives in `docs/extensions-server-support.md`):
 
 ```php
 // Skip the swap entirely while the poll tag is current.

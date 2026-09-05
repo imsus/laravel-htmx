@@ -12,7 +12,7 @@ use Imsus\LaravelHtmx\Console\UpgradeScanner;
  *
  * htmx 4 removed a handful of attributes, headers, and XHR-era events —
  * and renamed a few more. This command scans your Blade views offline
- * (lovely in CI) and tells you exactly what to fix, file by file:
+ * (useful in CI) and tells you exactly what to fix, file by file:
  *
  *     php artisan htmx:upgrade-check --path=resources/views
  *

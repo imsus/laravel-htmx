@@ -8,7 +8,7 @@ use Illuminate\Console\Command;
 use Imsus\LaravelHtmx\HtmxServiceProvider;
 
 /**
- * Publish everything htmx needs in one warm, welcoming step.
+ * Publish everything htmx needs in one step.
  *
  * Config, Blade views, and the pinned htmx 4 client assets land where
  * Laravel expects them — no manual copying, no wondering what you missed:

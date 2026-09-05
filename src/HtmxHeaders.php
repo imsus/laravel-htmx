@@ -93,8 +93,8 @@ class HtmxHeaders
     /**
      * Change how the response is swapped in.
      *
-     * Any htmx swap strategy works: "innerHTML", "outerHTML", "beforeend",
-     * "afterbegin", "none", and friends.
+     * Any htmx swap strategy: "innerHTML", "outerHTML", "beforeend",
+     * "afterbegin", "none".
      *
      *     ->reswap('innerHTML')
      */
@@ -138,7 +138,7 @@ class HtmxHeaders
     /**
      * Replace the current history entry instead of pushing a new one.
      *
-     * Lovely for search-as-you-type, where every keystroke should not
+     * Search-as-you-type is the classic case: every keystroke should not
      * become its own back-button stop.
      */
     public function replaceUrl(string|bool $url): static
@@ -213,10 +213,8 @@ class HtmxHeaders
      * The extension fetches the URL independently, so indicators and
      * disabled elements clear correctly — unlike an HX-Redirect pointed
      * at a file. For direct file responses, prefer
-     * `response()->download()` with a `Content-Disposition: attachment`
-     * header instead; the extension auto-detects those with no header
-     * needed here. Not to be confused with `response()->download()`,
-     * which streams a file — this only sets the HX-Download pointer.
+     * `response()->download()` instead; the extension auto-detects those
+     * by their `Content-Disposition: attachment` header.
      *
      *     return htmx()->headers()
      *         ->download('/files/report.pdf')

@@ -22,7 +22,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
  *     Htmx::isPartial();
  *
  * All three spellings ask this same singleton, so pick whichever reads
- * best where you are and move on to the fun part: building the response.
+ * best where you are, then build the response.
  *
  *     if (htmx()->isPartial()) {
  *         return view('items', ['items' => $items])->fragment('rows');
@@ -296,8 +296,8 @@ class Htmx
      * Get the element that triggered the request.
      *
      * Returns the tag and id htmx observed, like "button#save-btn".
-     * Lovely for logging, or for deciding which of several buttons on a
-     * page kicked things off.
+     * Log it, or use it to tell which of several buttons on a page
+     * fired the request.
      */
     public function source(?Request $request = null): ?string
     {
