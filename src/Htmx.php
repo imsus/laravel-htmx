@@ -144,6 +144,22 @@ class Htmx
     }
 
     /**
+     * Tell a poller the show is over.
+     *
+     * htmx polling honors the 286 status by quietly retiring the poll —
+     * no swap, no error, no further requests. Empty body, no headers:
+     * there is nothing to swap, so nothing is said:
+     *
+     *     if ($feed->finished()) {
+     *         return htmx()->stopPolling();
+     *     }
+     */
+    public function stopPolling(): Response
+    {
+        return response('', 286);
+    }
+
+    /**
      * Answer with a stream of HTML updates for the hx-sse extension.
      *
      * Each entry becomes one SSE block: a plain string is an unnamed
