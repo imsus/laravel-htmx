@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Htmx\Htmx\Console\Commands;
+namespace Imsus\LaravelHtmx\Console\Commands;
 
-use Htmx\Htmx\Console\UpgradeScanner;
 use Illuminate\Console\Command;
+use Imsus\LaravelHtmx\Console\UpgradeScanner;
 
 /**
  * Find the htmx 2.x habits that quietly break under htmx 4.

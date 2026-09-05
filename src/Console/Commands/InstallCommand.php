@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Htmx\Htmx\Console\Commands;
+namespace Imsus\LaravelHtmx\Console\Commands;
 
-use Htmx\Htmx\HtmxServiceProvider;
 use Illuminate\Console\Command;
+use Imsus\LaravelHtmx\HtmxServiceProvider;
 
 /**
  * Publish everything htmx needs in one warm, welcoming step.

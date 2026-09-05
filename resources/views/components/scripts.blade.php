@@ -1,4 +1,4 @@
-@php($assets = app(\Htmx\Htmx\HtmxAssets::class))
+@php($assets = app(\Imsus\LaravelHtmx\HtmxAssets::class))
 <meta name="htmx-config" content="{{ json_encode($assets->clientConfig(), JSON_UNESCAPED_SLASHES) }}">
 @foreach ($assets->scripts() as $script)
 <script

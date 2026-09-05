@@ -140,7 +140,7 @@ This prints versioned scripts with SRI hashes, the strict v4 config meta tag, an
 Need a CDN safety net? Flip `assets.cdnFallback` to `true` and the pinned `htmx.org@4.0.0` build steps in when local assets are missing. Extensions live in `assets.extensions` — htmx 4 loads them as direct `<script>` tags, so the package owns the list. The ESM and max builds ship vendored but stay out of your markup until you ask for one:
 
 ```blade
-@php($esm = app(\Htmx\Htmx\HtmxAssets::class)->variant('htmx.esm.js'))
+@php($esm = app(\Imsus\LaravelHtmx\HtmxAssets::class)->variant('htmx.esm.js'))
 <script type="module" src="{{ $esm['src'] }}" integrity="{{ $esm['integrity'] }}" crossorigin="anonymous"></script>
 ```
 

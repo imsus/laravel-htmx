@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Htmx\Htmx\HtmxAssets;
 use Illuminate\Config\Repository;
+use Imsus\LaravelHtmx\HtmxAssets;
 
 function htmaxAssets(array $overrides = []): HtmxAssets
 {

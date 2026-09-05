@@ -36,12 +36,12 @@
             "src/helpers.php"
         ],
         "psr-4": {
-            "Htmx\\Htmx\\": "src/"
+            "Imsus\\LaravelHtmx\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Htmx\\Htmx\\Tests\\": "tests/",
+            "Imsus\\LaravelHtmx\\Tests\\": "tests/",
             "Workbench\\App\\": "workbench/app/",
             "Workbench\\Database\\Factories\\": "workbench/database/factories/",
             "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
@@ -91,10 +91,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Htmx\\Htmx\\HtmxServiceProvider"
+                "Imsus\\LaravelHtmx\\HtmxServiceProvider"
             ],
             "aliases": {
-                "Htmx": "Htmx\\Htmx\\Facades\\Htmx"
+                "Htmx": "Imsus\\LaravelHtmx\\Facades\\Htmx"
             }
         }
     },

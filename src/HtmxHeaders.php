@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Htmx\Htmx;
+namespace Imsus\LaravelHtmx;
 
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 

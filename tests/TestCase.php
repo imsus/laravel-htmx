@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Htmx\Htmx\Tests;
+namespace Imsus\LaravelHtmx\Tests;
 
-use Htmx\Htmx\HtmxServiceProvider;
+use Imsus\LaravelHtmx\HtmxServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
 
 abstract class TestCase extends Orchestra

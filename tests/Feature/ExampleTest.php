@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use Htmx\Htmx\Facades\Htmx as HtmxFacade;
-use Htmx\Htmx\Htmx;
 use Illuminate\Support\Facades\Artisan;
+use Imsus\LaravelHtmx\Facades\Htmx as HtmxFacade;
+use Imsus\LaravelHtmx\Htmx;
 
 it('resolves the singleton', function () {
     expect(app(Htmx::class))->toBeInstanceOf(Htmx::class);

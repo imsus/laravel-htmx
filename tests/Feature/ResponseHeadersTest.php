@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use Htmx\Htmx\Facades\Htmx as HtmxFacade;
-use Htmx\Htmx\HtmxHeaders;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
+use Imsus\LaravelHtmx\Facades\Htmx as HtmxFacade;
+use Imsus\LaravelHtmx\HtmxHeaders;
 
 function headerProbeRoutes(): void
 {

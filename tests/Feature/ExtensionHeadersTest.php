@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use Htmx\Htmx\Facades\Htmx as HtmxFacade;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ViewErrorBag;
+use Imsus\LaravelHtmx\Facades\Htmx as HtmxFacade;
 
 function extensionProbeRoutes(): void
 {

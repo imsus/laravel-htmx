@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Htmx\Htmx;
+namespace Imsus\LaravelHtmx;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Htmx\Htmx\Console\AssetHasher;
+use Imsus\LaravelHtmx\Console\AssetHasher;
 
 it('derives sorted sri hashes from bytes on disk', function () {
     $dir = sys_get_temp_dir().'/htmx-assets-'.uniqid();

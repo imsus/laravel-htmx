@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Htmx\Htmx\Console\UpgradeScanner;
+use Imsus\LaravelHtmx\Console\UpgradeScanner;
 
 function scan(string $contents): array
 {

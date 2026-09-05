@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-use Htmx\Htmx\Facades\Htmx as HtmxFacade;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Imsus\LaravelHtmx\Facades\Htmx as HtmxFacade;
+use Imsus\LaravelHtmx\Htmx;
 
 function probeRoutes(): void
 {
@@ -159,16 +160,16 @@ it('reads source and target in tag#id format', function () {
 });
 
 it('registers every detection affordance as a request macro', function () {
-    foreach (Htmx\Htmx\Htmx::REQUEST_MACROS as $method) {
-        expect(method_exists(Htmx\Htmx\Htmx::class, $method))->toBeTrue()
+    foreach (Htmx::REQUEST_MACROS as $method) {
+        expect(method_exists(Htmx::class, $method))->toBeTrue()
             ->and(Request::hasMacro($method))->toBeTrue();
     }
 });
 
 it('maps every detection affordance to a wire name except the composite', function () {
-    $headers = (new ReflectionClass(Htmx\Htmx\Htmx::class))->getConstant('HEADERS');
+    $headers = (new ReflectionClass(Htmx::class))->getConstant('HEADERS');
 
-    foreach (Htmx\Htmx\Htmx::REQUEST_MACROS as $method) {
+    foreach (Htmx::REQUEST_MACROS as $method) {
         if ($method === 'isPartial') {
             continue;
         }

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Htmx\Htmx\Htmx;
+use Imsus\LaravelHtmx\Htmx;
 
 if (! function_exists('htmx')) {
     /**

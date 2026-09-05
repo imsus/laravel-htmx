@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Htmx\Htmx\Console;
+namespace Imsus\LaravelHtmx\Console;
 
 use Symfony\Component\Finder\Finder;
 

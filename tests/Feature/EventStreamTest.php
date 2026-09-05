@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
+use Imsus\LaravelHtmx\Facades\Htmx;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 function eventStreamBody(StreamedResponse $response): string
@@ -62,7 +63,7 @@ it('splits multiline data into one data line each', function () {
 
 it('reaches the stream through the facade', function () {
     Route::get('/_htmx-stream-facade', function () {
-        return Htmx\Htmx\Facades\Htmx::eventStream(['<p>hi</p>']);
+        return Htmx::eventStream(['<p>hi</p>']);
     });
 
     $response = test()->get('/_htmx-stream-facade')->assertOk();

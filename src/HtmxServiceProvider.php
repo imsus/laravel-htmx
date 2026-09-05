@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Htmx\Htmx;
+namespace Imsus\LaravelHtmx;
 
-use Htmx\Htmx\Console\Commands\HashAssetsCommand;
-use Htmx\Htmx\Console\Commands\InstallCommand;
-use Htmx\Htmx\Console\Commands\UpgradeCheckCommand;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\ServiceProvider;
+use Imsus\LaravelHtmx\Console\Commands\HashAssetsCommand;
+use Imsus\LaravelHtmx\Console\Commands\InstallCommand;
+use Imsus\LaravelHtmx\Console\Commands\UpgradeCheckCommand;
 
 /**
  * Wire htmx into your Laravel app, the Laravel way.

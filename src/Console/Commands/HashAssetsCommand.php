@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Htmx\Htmx\Console\Commands;
+namespace Imsus\LaravelHtmx\Console\Commands;
 
-use Htmx\Htmx\Console\AssetHasher;
 use Illuminate\Console\Command;
+use Imsus\LaravelHtmx\Console\AssetHasher;
 
 /**
  * Print the SRI integrity block for the vendored client assets.

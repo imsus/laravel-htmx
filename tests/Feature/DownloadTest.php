@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use Htmx\Htmx\HtmxHeaders;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
+use Imsus\LaravelHtmx\HtmxHeaders;
 
 function downloadProbeRoutes(): void
 {
