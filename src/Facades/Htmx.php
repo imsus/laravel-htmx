@@ -25,6 +25,8 @@ use Illuminate\Support\Facades\Facade;
  * @method static bool isHistoryRestore(\Illuminate\Http\Request|null $request = null)
  * @method static string|null source(\Illuminate\Http\Request|null $request = null)
  * @method static string|null target(\Illuminate\Http\Request|null $request = null)
+ * @method static string|null triggerId(\Illuminate\Http\Request|null $request = null)
+ * @method static string|null triggerName(\Illuminate\Http\Request|null $request = null)
  * @method static string|null requestType(\Illuminate\Http\Request|null $request = null)
  * @method static string|null ptag(\Illuminate\Http\Request|null $request = null)
  * @method static string|null prompt(\Illuminate\Http\Request|null $request = null)

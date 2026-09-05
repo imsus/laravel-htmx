@@ -19,6 +19,8 @@ function probeRoutes(): void
                 'source' => $request->source(),
                 'target' => $request->target(),
                 'requestType' => $request->requestType(),
+                'triggerId' => $request->triggerId(),
+                'triggerName' => $request->triggerName(),
             ],
             'helper' => [
                 'isHtmx' => htmx()->isHtmx(),
@@ -28,6 +30,8 @@ function probeRoutes(): void
                 'source' => htmx()->source(),
                 'target' => htmx()->target(),
                 'requestType' => htmx()->requestType(),
+                'triggerId' => htmx()->triggerId(),
+                'triggerName' => htmx()->triggerName(),
             ],
             'facade' => [
                 'isHtmx' => HtmxFacade::isHtmx(),
@@ -37,6 +41,8 @@ function probeRoutes(): void
                 'source' => HtmxFacade::source(),
                 'target' => HtmxFacade::target(),
                 'requestType' => HtmxFacade::requestType(),
+                'triggerId' => HtmxFacade::triggerId(),
+                'triggerName' => HtmxFacade::triggerName(),
             ],
         ];
 
@@ -67,6 +73,8 @@ it('treats a plain request as a full page', function () {
         'source' => null,
         'target' => null,
         'requestType' => null,
+        'triggerId' => null,
+        'triggerName' => null,
     ]);
 });
 
@@ -82,6 +90,8 @@ it('detects a partial request', function () {
         'source' => null,
         'target' => null,
         'requestType' => 'partial',
+        'triggerId' => null,
+        'triggerName' => null,
     ]);
 });
 
@@ -96,6 +106,8 @@ it('does not treat an htmx request without a partial type as partial', function 
         'source' => null,
         'target' => null,
         'requestType' => null,
+        'triggerId' => null,
+        'triggerName' => null,
     ]);
 });
 
@@ -125,6 +137,8 @@ it('resolves history-restore requests to a full page', function () {
         'source' => null,
         'target' => null,
         'requestType' => 'partial',
+        'triggerId' => null,
+        'triggerName' => null,
     ]);
 });
 
@@ -141,6 +155,8 @@ it('resolves boosted requests to a full page', function () {
         'source' => null,
         'target' => null,
         'requestType' => 'partial',
+        'triggerId' => null,
+        'triggerName' => null,
     ]);
 });
 
@@ -189,5 +205,19 @@ it('treats blank headers as absent and folds header case', function () {
         expect($via[$surface]['target'])->toBeNull()
             ->and($via[$surface]['requestType'])->toBe('partial')
             ->and($via[$surface]['isPartial'])->toBeTrue();
+    }
+});
+
+it('reads the triggering element id and name', function () {
+    $via = probe([
+        'HX-Request' => 'true',
+        'HX-Request-Type' => 'partial',
+        'HX-Trigger' => 'save-btn',
+        'HX-Trigger-Name' => 'save',
+    ]);
+
+    foreach (['macro', 'helper', 'facade'] as $surface) {
+        expect($via[$surface]['triggerId'])->toBe('save-btn')
+            ->and($via[$surface]['triggerName'])->toBe('save');
     }
 });

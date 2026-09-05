@@ -50,6 +50,8 @@ class Htmx
         'isHistoryRestore',
         'source',
         'target',
+        'triggerId',
+        'triggerName',
         'requestType',
         'ptag',
         'prompt',
@@ -67,6 +69,8 @@ class Htmx
         'isHistoryRestore' => 'HX-History-Restore-Request',
         'source' => 'HX-Source',
         'target' => 'HX-Target',
+        'triggerId' => 'HX-Trigger',
+        'triggerName' => 'HX-Trigger-Name',
         'requestType' => 'HX-Request-Type',
         'ptag' => 'HX-PTag',
         'prompt' => 'HX-Prompt',
@@ -265,6 +269,30 @@ class Htmx
     public function target(?Request $request = null): ?string
     {
         return $this->header($request, self::HEADERS['target']);
+    }
+
+    /**
+     * Get the id of the element that fired the request.
+     *
+     * Null when the trigger carries no id. Pair it with triggerName()
+     * when several controls share one endpoint and the server must tell
+     * them apart.
+     */
+    public function triggerId(?Request $request = null): ?string
+    {
+        return $this->header($request, self::HEADERS['triggerId']);
+    }
+
+    /**
+     * Get the name of the element that fired the request.
+     *
+     * Null when the trigger carries no name — most swaps do not, so
+     * treat this as a hint for shared endpoints, not a branch condition
+     * for layout decisions.
+     */
+    public function triggerName(?Request $request = null): ?string
+    {
+        return $this->header($request, self::HEADERS['triggerName']);
     }
 
     /**
