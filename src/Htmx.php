@@ -7,6 +7,7 @@ namespace Imsus\LaravelHtmx;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\View\View;
+use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
@@ -132,14 +133,35 @@ class Htmx
      *     );
      *
      * An empty list answers an empty 200 — polling loops compose these
-     * calls without special-casing. Unknown names fail exactly the way
-     * core fragment rendering fails: loudly, not silently skipped.
+     * calls without special-casing. Unknown names throw instead of
+     * rendering: core `fragment()` falls back to the full view when a
+     * name is missing, and a whole page swapped into a row slot is
+     * never what a typo meant.
      *
      * @param  list<string>  $names
      */
     public function oob(View $view, array $names): Response
     {
-        return response($view->fragments($names));
+        $body = $view->render(function (View $view) use ($names): string {
+            $known = $view->getFactory()->getFragments();
+            $unknown = array_diff($names, array_keys($known));
+
+            if ($unknown !== []) {
+                throw new InvalidArgumentException(
+                    'Unknown fragment(s) ['.implode(', ', $unknown).'] for view ['.$view->getName().'].',
+                );
+            }
+
+            $body = '';
+
+            foreach ($names as $name) {
+                $body .= $known[$name];
+            }
+
+            return $body;
+        });
+
+        return response($body);
     }
 
     /**

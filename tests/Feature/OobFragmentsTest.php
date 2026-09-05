@@ -54,3 +54,10 @@ it('answers an empty fragment list with an empty body', function () {
 
     expect($body)->toBe('');
 });
+
+it('refuses unknown names instead of swapping a full page', function () {
+    oobProbeRoutes();
+
+    expect(fn () => htmx()->oob(view('oob-page', ['todo' => 'Milk', 'left' => 3]), ['todo', 'nope']))
+        ->toThrow(InvalidArgumentException::class, 'nope');
+});
