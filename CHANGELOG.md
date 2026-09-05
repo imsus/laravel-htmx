@@ -1,7 +1,15 @@
 # Release Notes
 
-## [Unreleased](https://github.com/imsus/laravel-htmx/compare/v0.1.0...HEAD)
+## [Unreleased](https://github.com/imsus/laravel-htmx/compare/v0.2.0...HEAD)
 
+## [v0.2.0](https://github.com/imsus/laravel-htmx/compare/v0.1.0...v0.2.0) - 2026-09-05
+
+One response, many swaps — plus a docs pass.
+
+- OOB multi-fragment responses: `htmx()->oob($view, ['todo', 'todo-count'])` composes named fragments in order; unknown names throw instead of swapping a full page.
+- `currentUrl()` detection from the v4-sent `HX-Current-URL` header, across request macro, helper, and facade.
+- README: package comparison with mauricius/laravel-htmx and a Laravel-voice rewrite of the README and PHPDocs.
+- Bundled skill documents the OOB pattern and the v4 poll-quit pattern (trigger-less element).
 
 ## [v0.1.0](https://github.com/imsus/laravel-htmx/compare/...v0.1.0) - 2026-09-05
 
