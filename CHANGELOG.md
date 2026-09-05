@@ -1,11 +1,14 @@
 # Release Notes
 
-## [Unreleased](https://github.com/imsus/laravel-htmx/compare/v0.1.0...1.x)
+## [Unreleased](https://github.com/imsus/laravel-htmx/compare/v0.1.0...HEAD)
+
+
+## [v0.1.0](https://github.com/imsus/laravel-htmx/compare/...v0.1.0) - 2026-09-05
 
 - Request detection core: `isHtmx` / `isPartial` / `isBoosted` /
   `isHistoryRestore` / `source` / `target` / `requestType` via request macros,
-  the `htmx()` helper, and the `Htmx` facade over one `HtmxManager`.
-- v4 response headers: all nine through a fluent builder (`trigger`, `retarget`,
+  the `htmx()` helper, and the `Htmx` facade.
+- v4 response headers: eleven through a fluent builder (`trigger`, `retarget`,
   `reswap`, `reselect`, `pushUrl`, `replaceUrl`, `redirect`, `location`,
   `refresh`) with `target` / `swap` / `push` / `replace` aliases, plus
   chainable `Response` macros.
@@ -20,8 +23,3 @@
 - Extension server support: `ptag` / `prompt` / `isPreloaded` detection plus
   the `HX-PTag` response header, vendored `hx-ptag.js`, and a `/patterns`
   polling ticker (see `docs/extensions-server-support.md`).
-
-
-## [v0.1.0](https://github.com/imsus/laravel-htmx/compare/...v0.1.0) - 202x-xx-xx
-
-Initial pre-release.
