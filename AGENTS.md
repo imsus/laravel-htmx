@@ -36,6 +36,16 @@ This repository is a Laravel package. Keep the package focused, idiomatic, and e
   `php vendor/bin/testbench vendor:publish --tag=laravel-htmx-assets --force`
   (same for `-config` / `-views`), or the dev server keeps serving stale files.
 
+### Demo app (`demo/`)
+
+`demo/` is a full Laravel 13 application in this monorepo that showcases htmx 4 on top of the package. It consumes the package at HEAD through a composer path repository (`../`, `symlink: false`), so package changes land in `demo/vendor` only after `composer update imsus/laravel-htmx` inside `demo/`.
+
+- Run locally: `cd demo && composer install && php artisan serve`
+- Refresh published package files after changing package `config/` or `public/`:
+  `php artisan vendor:publish --tag=laravel-htmx-config --tag=laravel-htmx-assets --force`
+- Tests: `php artisan test` (in `demo/`)
+- Deploy: Laravel Cloud monorepo app with root directory `demo/`; PHP 8.5. Local uses the `file` session driver; Cloud must set a real DB driver. Never let package tests depend on `demo/`.
+
 ### Local Skills
 
 - `package-scaffold`: use when adding package capabilities or wiring them through the service provider, including commands, migrations, routes, config, views, translations, assets, middleware, publish tags, workbench files, and console-only behavior.
