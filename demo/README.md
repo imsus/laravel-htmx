@@ -16,7 +16,19 @@ php artisan serve
 ```
 
 The `file` session driver keeps local runs free of a database. Feature demos
-that need persistence can use the sqlite file created by `composer setup`.
+use the sqlite file created by `composer setup` and read the shared seeded
+Linear-style workspace (projects, issues, activity logs):
+
+```sh
+php artisan db:seed
+```
+
+## Patterns
+
+The homepage lists every pattern showcase; each links to its own page under
+`/patterns/<slug>`. All patterns drive the same seeded workspace data —
+adding a pattern never needs new demo data, just a new page (and any fragment
+routes it swaps).
 
 After changing the package's `config/` or `public/` files, re-run the
 `vendor:publish` command above so the copies under `config/` and

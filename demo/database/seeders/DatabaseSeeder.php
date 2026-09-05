@@ -21,5 +21,9 @@ class DatabaseSeeder extends Seeder
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
+
+        // Linear-style demo workspace: projects, issues, and activity logs.
+        // Every pattern showcase reads this dataset.
+        $this->call(WorkspaceSeeder::class);
     }
 }
