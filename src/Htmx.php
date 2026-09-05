@@ -51,8 +51,7 @@ class Htmx
         'isHistoryRestore',
         'source',
         'target',
-        'triggerId',
-        'triggerName',
+        'currentUrl',
         'requestType',
         'ptag',
         'prompt',
@@ -70,8 +69,7 @@ class Htmx
         'isHistoryRestore' => 'HX-History-Restore-Request',
         'source' => 'HX-Source',
         'target' => 'HX-Target',
-        'triggerId' => 'HX-Trigger',
-        'triggerName' => 'HX-Trigger-Name',
+        'currentUrl' => 'HX-Current-URL',
         'requestType' => 'HX-Request-Type',
         'ptag' => 'HX-PTag',
         'prompt' => 'HX-Prompt',
@@ -187,22 +185,6 @@ class Htmx
         return $this->headers()
             ->ptag($tag)
             ->applyTo(response($view->fragmentIf(true, $fragment)));
-    }
-
-    /**
-     * Tell a poller the show is over.
-     *
-     * htmx polling honors the 286 status by quietly retiring the poll —
-     * no swap, no error, no further requests. Empty body, no headers:
-     * there is nothing to swap, so nothing is said:
-     *
-     *     if ($feed->finished()) {
-     *         return htmx()->stopPolling();
-     *     }
-     */
-    public function stopPolling(): Response
-    {
-        return response('', 286);
     }
 
     /**
@@ -334,27 +316,15 @@ class Htmx
     }
 
     /**
-     * Get the id of the element that fired the request.
+     * Get the current URL of the browser.
      *
-     * Null when the trigger carries no id. Pair it with triggerName()
-     * when several controls share one endpoint and the server must tell
-     * them apart.
+     * htmx reports it with every request. Handy for redirects back,
+     * logging where a partial was asked from, or any flow that needs
+     * the address bar rather than the endpoint.
      */
-    public function triggerId(?Request $request = null): ?string
+    public function currentUrl(?Request $request = null): ?string
     {
-        return $this->header($request, self::HEADERS['triggerId']);
-    }
-
-    /**
-     * Get the name of the element that fired the request.
-     *
-     * Null when the trigger carries no name — most swaps do not, so
-     * treat this as a hint for shared endpoints, not a branch condition
-     * for layout decisions.
-     */
-    public function triggerName(?Request $request = null): ?string
-    {
-        return $this->header($request, self::HEADERS['triggerName']);
+        return $this->header($request, self::HEADERS['currentUrl']);
     }
 
     /**

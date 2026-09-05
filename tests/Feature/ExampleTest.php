@@ -35,7 +35,7 @@ it('mirrors the Htmx interface on the facade', function () {
     sort($actual);
 
     // Response macros live behind headers(), not on the entry point.
-    $expected = array_merge(Htmx::REQUEST_MACROS, ['headers', 'errorPartial', 'eventStream', 'oob', 'poll', 'stopPolling']);
+    $expected = array_merge(Htmx::REQUEST_MACROS, ['headers', 'errorPartial', 'eventStream', 'oob', 'poll']);
     sort($expected);
 
     expect($actual)->toBe($expected);

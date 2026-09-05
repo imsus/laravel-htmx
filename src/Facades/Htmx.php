@@ -25,8 +25,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static bool isHistoryRestore(\Illuminate\Http\Request|null $request = null)
  * @method static string|null source(\Illuminate\Http\Request|null $request = null)
  * @method static string|null target(\Illuminate\Http\Request|null $request = null)
- * @method static string|null triggerId(\Illuminate\Http\Request|null $request = null)
- * @method static string|null triggerName(\Illuminate\Http\Request|null $request = null)
+ * @method static string|null currentUrl(\Illuminate\Http\Request|null $request = null)
  * @method static string|null requestType(\Illuminate\Http\Request|null $request = null)
  * @method static string|null ptag(\Illuminate\Http\Request|null $request = null)
  * @method static string|null prompt(\Illuminate\Http\Request|null $request = null)
@@ -36,7 +35,6 @@ use Illuminate\Support\Facades\Facade;
  * @method static \Illuminate\Http\Response errorPartial(\Illuminate\View\View $view, string $fragment, string $slot, int $status = 422)
  * @method static \Illuminate\Http\Response oob(\Illuminate\View\View $view, list<string> $names)
  * @method static \Illuminate\Http\Response poll(\Illuminate\View\View $view, string $fragment, string $tag, \Illuminate\Http\Request|null $request = null)
- * @method static \Illuminate\Http\Response stopPolling()
  */
 class Htmx extends Facade
 {

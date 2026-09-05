@@ -64,8 +64,8 @@ Route::get('/items', fn (Request $request) =>
 `$request->isPartial()` is true only for fragment requests — history-restore
 and boosted navigation always get the full page. Detection surfaces:
 `$request->isHtmx()`, `isPartial()`, `isBoosted()`, `isHistoryRestore()`,
-`source()` / `target()` (`tag#id` format), `triggerId()` / `triggerName()`
-(the firing element's id and name), and `requestType()`. The same API
+`source()` / `target()` (`tag#id` format), `currentUrl()` (the browser
+address htmx reports), and `requestType()`. The same API
 is reachable via `htmx()` and the `Htmx` facade.
 
 One response can update several elements: mark each fragment root with
@@ -131,8 +131,8 @@ a real 3xx); another `4xx` when client code distinguishes failure kinds.
   `htmx()->poll($view, 'news', $current)` — a matching incoming tag
   returns an empty `304`, otherwise the Fragment renders stamped with
   the new tag. The `ptag($tag)` builder and `Response` macro remain for
-  hand-assembled responses. When the poll is finished, quit it with
-  `htmx()->stopPolling()` — an empty `286` htmx honors by retiring the poller.
+  hand-assembled responses. Finished polls quit v4-style: return the
+  element without its trigger attributes and htmx retires the poller.
 - Prompt answers (`hx-prompt`): read `$request->prompt()`.
 - Speculative preloads (`hx-preload`): check `$request->isPreloaded()` and
   serve cheaply.
