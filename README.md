@@ -220,6 +220,23 @@ php artisan htmx:upgrade-check --path=resources/views --ext=.blade.php
 
 It flags removed attributes (`hx-ext`, `hx-request`, `hx-vars`, `hx-params`), removed headers (`HX-Trigger-After-Swap`, `HX-Trigger-After-Settle`), XHR-era events, direct extension `<script>` includes, `hx-inherit` (now the `:inherited` modifier), and unquoted `from:(` / `target:(` selectors. It exits non-zero while findings remain, so CI can hold the line.
 
+## Choosing between htmx packages
+
+If your app runs htmx 1.x or 2.x, reach for [mauricius/laravel-htmx](https://github.com/mauricius/laravel-htmx) — the established package since 2022, dependency-light (`illuminate/contracts` only), and fluent in that era.
+
+This package exists because htmx 4 changed the wire under everyone:
+
+| | mauricius/laravel-htmx | laravel-htmx (this one) |
+|---|---|---|
+| htmx era | 1.x (`HX-Trigger-After-Swap/Settle`, extension attributes) | 4.x (unified `HX-Trigger`, extensions as `<script>` tags, `history-cache`) |
+| Detection | `HtmxRequest` getters | Request macros + `htmx()` + facade, with the partial / boosted / history-restore split |
+| Responses | `HtmxResponse` builder plus one-purpose classes | Fluent headers + `Response` macros, SSE event stream, side-channel download |
+| Fragments | Custom `@fragment` directives, nested and OOB multi-fragment | Core `@fragment` + the `fragmentIf` pattern, no new directives |
+| Client JS | Bring your own | Pinned vendored builds + SRI, `<x-htmx::scripts />`, CDN fallback, `htmax` switch |
+| Tooling | — | `htmx:install`, `htmx:upgrade-check`, asset hashing |
+
+Rule of thumb: staying on 1.x/2.x → theirs. Starting fresh or moving to v4 → this one, and let `htmx:upgrade-check` do the boring part. The fragment vocabulary here owes a visible debt to theirs — the v4 wire is what's new.
+
 ## Changelog
 
 Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
