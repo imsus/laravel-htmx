@@ -10,7 +10,17 @@ if ($feed->finished()) {
 
 **Blocked by:** nothing.
 
-**Status:** ready-for-agent
+**Status:** wontfix
+
+> Research 2026-09-05: the `286` stop signal does not exist in htmx 4.
+> The vendored 4.0.0 client contains no `286` handling, the v4 polling
+> docs omit it, and the [v4 polling pattern](https://four.htmx.org/patterns/polling)
+> prescribes returning the element *without* its trigger attributes
+> instead. Worse, v4 swaps `286` responses as content (`noSwap` covers
+> only `204`/`304`), so the shipped helper would have swapped emptiness
+> into the target while polling continued. Removed in favor of the
+> trigger-less-element pattern, now documented in the bundled skill.
+> Never released (built and reverted on unreleased `main`).
 
 - [ ] `stopPolling()` returns an empty-body response with status `286`
 - [ ] No htmx headers applied (there is nothing to swap — headers would lie)

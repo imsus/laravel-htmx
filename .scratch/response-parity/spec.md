@@ -13,14 +13,15 @@ Close the three gaps in the package's own idiom — entry-point methods on `Htmx
 ## User Stories
 
 1. As an app developer, I want one response to update several elements (a row plus its counter), so that related swaps stay in a single request.
-2. As an app developer, I want to stop a poller with the `286` status, so that finished polls quit without client code.
-3. As an app developer, I want the triggering element's id and name, so that server logic can react to *which* control fired.
+2. As an app developer, I want finished polls to quit without client code, so that completed jobs stop polling v4-style (trigger-less element).
+3. As an app developer, I want the browser URL htmx reports with each request, so that redirects-back and logging see the address bar rather than the endpoint.
 
 ## Implementation Decisions
 
 - OOB is composition, not a new mechanism: render several named `fragment`s from one view, concatenate in order, return one response. The app marks OOB roots with `hx-swap-oob` in its own markup — the package never rewrites markup.
-- `286` ships as an entry-point method with an empty body; same registration path as `poll()` / `errorPartial()`.
-- Trigger accessors extend the existing `REQUEST_MACROS` + `HEADERS` tables, so helper/macro/facade spellings arrive free.
+- Polls quit v4-style by returning the element without trigger attributes (documented in the skill); no status-code helper, since v4 honors none.
+- Detection additions (`currentUrl()`) extend the existing `REQUEST_MACROS` + `HEADERS` tables, so helper/macro/facade spellings arrive free.
+- v4 research reversed two takes: the client never sends `HX-Trigger` / `HX-Trigger-Name` (dropped after 2.x), and no `286` handling exists in v4 (polls quit by returning the element without trigger attributes) — both reverted before any release, `currentUrl()` (`HX-Current-URL`, genuinely v4-sent) ships instead.
 - Glossary kept: `partial` (wire), `fragment` (Blade mechanism), `trigger` (client event).
 
 ## Testing Decisions
